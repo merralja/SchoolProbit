@@ -1,0 +1,503 @@
+---
+title: "John Merrall Activity 1"
+author: "John Merrall"
+date: "20/09/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Main Research Interest
+
+I'm generally interested in anything to do with quantitative analysis and complexity in social science. 
+
+My MA thesis at this point will involve using spatial analysis to study the effect of school closures on housing prices.
+
+# Favourites
+
+## Favourite songs
+
+1. Mono "Requiem for Hell"
+2. Magma "Mekhanik Destruktiw Kommandoh"
+3. Clann "I Hold You"
+4. Our Last Night "Skyfall" (Adele cover)
+5. Alexandra Ungureanu & Nora Denes Symphonical "Hey Brother" (Avicii cover)
+
+## Favourite equation
+
+The trick for integrating the Gaussian by squaring it so you can integrate in polar:
+
+$$
+I = \sqrt{\int_{-\infty}^{\infty}e^{-x^2}dx\int_{-\infty}^{\infty}e^{-y^2}dy}
+$$
+
+## Favourite Artists
+
+I don't generally care about art.
+
+Name | Achievements
+- | - 
+Friedrich Nietzsche | basically invented postmodernism
+bill bissett | Canada's greatest living poet
+Mark Twain | gold standard of American literature
+Chuck Jones & Michael Maltese | created the greatest works of Bugs Bunny
+Jorge Luis Borges | did some neat stuff too I guess
+
+
+# A Chunk of Code
+
+## 1. A Cautionary Tale about regression
+
+I thought this was interesting, so why not spend a few minutes doing this first.
+
+
+```{r}
+#
+# let's make a dataframe (tibble actually) with 20 independent variables, all random normal:
+#
+library(tidyverse)
+df <- tibble(
+y = rnorm(100),
+x1 = rnorm(100),
+x2 = rnorm(100),
+x3 = rnorm(100),
+x4 = rnorm(100),
+x5 = rnorm(100),
+x6 = rnorm(100),
+x7 = rnorm(100),
+x8 = rnorm(100),
+x9 = rnorm(100),
+x10 = rnorm(100),
+x11 = rnorm(100),
+x12 = rnorm(100),
+x13 = rnorm(100),
+x14 = rnorm(100),
+x15 = rnorm(100),
+x16 = rnorm(100),
+x17 = rnorm(100),
+x18 = rnorm(100),
+x19 = rnorm(100),
+x20 = rnorm(100)
+)
+#
+# apparently, if you regress a random y on a set of 20 random x, you will find that
+# there's usually two of the 20 variables that is significant at better than 10 percent!
+#
+p <- lm(formula = y ~ x1+x2+x3+x4+x5+x6+x7+x8+x9+x10+x11+x12+x13+x14+x15+x16+x17+x18+x19+x20, data = df)
+#
+# so what happens?
+#
+summary(p)
+
+```
+
+Yes, your F-stat should maybe sometimes sort of pick up that you're running a random regression, and so a bad p-value for your F-stat should protect you from erroneously finding a relationship between unrelated variables.
+
+However, one time that I did this, I got 2 variables with P<0.05, _plus_ one with p < 0.01, and even an f-stat with a p of 0.07. When I ran a second regression on just those 3 "significant" variables, the one's significance even went down to ~ p <0.0015, and the F-stat went down to p < 0.0002!!!
+
+Understand, these are _random_ numbers. Or, at least, numbers generated "randomly" on my PC using R.
+
+Thus, you don't want to stick variables willy-nilly into a regression. Some of them will come up spuriously significant just by chance.
+
+## 2. A Cautionary Tale about trying to do all the work in R
+
+I want to do a probit on whether or not DAs that saw an increase or decrease in income or kid population, between 2006 and 2016, were more or less likely to lose their local public primary school to amalgamation.
+
+Let's start by trying to read and play with census data.
+
+```{r}
+CENSUS2006DATA <- read.csv(file="C:/Users/me/Desktop/GRAD SCHOOL/GEOG 712/activity1/CENSUS2006DATA.csv", header=TRUE, sep=",")
+CENSUS2016DATA <- read.csv(file="C:/Users/me/Desktop/GRAD SCHOOL/GEOG 712/activity1/CENSUS2016DATA.csv", header=TRUE, sep=",")
+```
+
+OK, that worked. 
+
+Now if we want to do a regression on delta income and delta children between 2006 and 2016, we first need to cut out all the 2006 NAs. This is easy to do in R.
+
+(We have to leave in all the 2016 NAs for now. We kill them later.)
+
+
+```{r}
+CENSUS2006DATA <- subset(CENSUS2006DATA, !is.na(AVGAFTERTAXINC))
+CENSUS2006DATA <- subset(CENSUS2006DATA, !is.na(PERCLOWINC0TO5))
+#
+# for some weird reason, there's also areas with 0 reported average after tax income.
+# I guess I can't use those in my work either, if I want to calculate delta incomes!
+#
+CENSUS2006DATA <- subset(CENSUS2006DATA, AVGAFTERTAXINC>0)
+
+#CENSUS2016DATA <- subset(CENSUS2016DATA, !is.na(AVGAFTERTAXINCOME))
+#CENSUS2016DATA <- subset(CENSUS2016DATA, !is.na(PERCLOWINC0TO5))
+#CENSUS2016DATA <- subset(CENSUS2016DATA, AVGAFTERTAXINCOME>0)
+```
+
+```{r}
+# get rid of some of the excess columns in 2006
+head((CENSUS2006DATA <- CENSUS2006DATA %>%
+select(DAUID, POP2006, POP0TO14ADD, PERCLOWINC0TO5, AVGAFTERTAXINC)))
+# note I calculated pop0to14 outside of R in libreoffice before I started this work
+```
+```{r}
+#Now let's rename columns to make keeping track of stuff easier
+# we'll also cut the length of these file names
+CE06 <- CENSUS2006DATA %>% 
+  rename(
+    POP0TO142006 = POP0TO14ADD,
+    PERCLOWINC0TO52006 = PERCLOWINC0TO5,
+    AVGAFTERTAXINCHH2006 = AVGAFTERTAXINC
+    )
+CE16 <- CENSUS2016DATA %>%
+  rename(
+    POP0TO142016 = POP0TO14,
+    PERCLOWINC0TO52016 = PERCLOWINC0TO5,
+    AVGAFTERTAXINCHH2016 = AVGAFTERTAXINCOME
+  )
+```
+
+```{r}
+# Now that they're cleaned up, which 2006 DAs disappeared by 2016?
+(in2006not2016 <- anti_join(CE06,CE16))
+```
+
+Thankfully, this yields only the 2006 DAs that were split into smaller DAs in 2011 and 2016. I can confirm this because I had actually figured those out by hand in an excel file, using ArcGIS.
+
+So let's fake the 2016 pop etc. data for those 23 split 2006 DAs by hand. 
+
+I knew there was a better way to do this: aw_interpolate will do areal weighted "interpolation" of special features. In this case, "interpolation" would mostly involve just adding split DAs back together. However, these aren't sfs yet, they're still just excel, and I don't see why in this case I would want to bring in a whole bunch of geometry to do this work.
+
+So let's do it the hard, stupid way. I could just have easily done the math in excel before loading the files in R, but at least you get to track all my math here.
+
+```{r}
+# the default for "merge" will do a join while dropping 2006 DAs found in from in2006not2016
+# so we have to keep those by saying all.x = "TRUE"
+# it also has no problem bringing "NA" data from 2016
+# so we will have to drop those later on
+#
+finaldf <- merge(CE06, CE16, by = "DAUID", all.x = "TRUE")
+# now we add in all the split-DA data by hand
+# ONE AT A TIME
+#
+# DAUID==35250063
+#
+finaldf$POP2016[finaldf$DAUID==35250063] <- (CE16$POP2016[CE16$DAUID==35250999] + CE16$POP2016[CE16$DAUID==35250998])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250063] <- (CE16$POP0TO142016[CE16$DAUID==35250999] + CE16$POP0TO142016[CE16$DAUID==35250998])
+#
+# this is kludged, I should have downloaded number of households to average this properly
+# will fix it later
+# (though these are all new neighbourhoods, so we can assume in approximation that all the
+# households are uniform in size)
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250063] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250999] * CE16$POP2016[CE16$DAUID==35250999] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250998] * CE16$POP2016[CE16$DAUID==35250998]) / finaldf$POP2016[finaldf$DAUID==35250063]), 0
+)
+#
+# and for perclowinc0to5, this really does just take population proportions to solve
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250063] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35250999] * CE16$POP2016[CE16$DAUID==35250999] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250998] * CE16$POP2016[CE16$DAUID==35250998]) / finaldf$POP2016[finaldf$DAUID==35250063]), 0
+)
+# 
+# now we just have to do this for the other 22 split DAs
+#
+# then we delete all the data that is NA in 2016
+# and then maybe we'll be able to do a regression! yay
+#
+```
+
+Thus, I've illustrated one way in which it's a lot easier to do this stuff outside of R, in say ArcGIS or even in Excel. This would take me 15 minutes to get done for all 23 DAs in excel, but here I've had to spend about 10 hours learning things in R to do even just one DA - and I've already taken 2 R courses and I've been programming since the 1980s.
+
+Thankfully the other 22 DAs can be done sort of in a cut-and-paste way, only taking another 2 hours of coding.
+
+I think you would actually want to write a subroutine to utilize my excel file of DA changes, but that would require terminating a loop on an NA and I don't know how to do that yet.
+
+```{r}
+# so let's do all the rest here.
+#
+# DA = 35250132
+#
+finaldf$POP2016[finaldf$DAUID==35250132] <- (CE16$POP2016[CE16$DAUID==35250981] + CE16$POP2016[CE16$DAUID==35250982])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250132] <- (CE16$POP0TO142016[CE16$DAUID==35250981] + CE16$POP0TO142016[CE16$DAUID==35250982])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250132] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250981] * CE16$POP2016[CE16$DAUID==35250981] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250982] * CE16$POP2016[CE16$DAUID==35250982]) / finaldf$POP2016[finaldf$DAUID==35250132]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250132] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35250981] * CE16$POP2016[CE16$DAUID==35250981] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250982] * CE16$POP2016[CE16$DAUID==35250982]) / finaldf$POP2016[finaldf$DAUID==35250132]), 0
+)
+#
+# DA = 35250154
+#
+finaldf$POP2016[finaldf$DAUID==35250154] <- (CE16$POP2016[CE16$DAUID==35251003] + CE16$POP2016[CE16$DAUID==35251004] + CE16$POP2016[CE16$DAUID==35251005] + CE16$POP2016[CE16$DAUID==35251006])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250154] <- (CE16$POP0TO142016[CE16$DAUID==35251003] + CE16$POP0TO142016[CE16$DAUID==35251004] + CE16$POP0TO142016[CE16$DAUID==35251005] + CE16$POP0TO142016[CE16$DAUID==35251006])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250154] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251003] * CE16$POP2016[CE16$DAUID==35251003] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251004] * CE16$POP2016[CE16$DAUID==35251004] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251005] * CE16$POP2016[CE16$DAUID==35251005] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251006] * CE16$POP2016[CE16$DAUID==35251006]) / finaldf$POP2016[finaldf$DAUID==35250154]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250154] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251003] * CE16$POP2016[CE16$DAUID==35251003] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251004] * CE16$POP2016[CE16$DAUID==35251004] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251005] * CE16$POP2016[CE16$DAUID==35251005] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251006] * CE16$POP2016[CE16$DAUID==35251006]) / finaldf$POP2016[finaldf$DAUID==35250154]), 0
+)
+#
+# DA = 35250155
+#
+finaldf$POP2016[finaldf$DAUID==35250155] <- (CE16$POP2016[CE16$DAUID==35251007] + CE16$POP2016[CE16$DAUID==35251008] + CE16$POP2016[CE16$DAUID==35251009] + CE16$POP2016[CE16$DAUID==35251010])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250155] <- (CE16$POP0TO142016[CE16$DAUID==35251007] + CE16$POP0TO142016[CE16$DAUID==35251008] + CE16$POP0TO142016[CE16$DAUID==35251009] + CE16$POP0TO142016[CE16$DAUID==35251010])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250155] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251007] * CE16$POP2016[CE16$DAUID==35251007] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251008] * CE16$POP2016[CE16$DAUID==35251008] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251009] * CE16$POP2016[CE16$DAUID==35251009] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251010] * CE16$POP2016[CE16$DAUID==35251010]) / finaldf$POP2016[finaldf$DAUID==35250155]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250155] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251007] * CE16$POP2016[CE16$DAUID==35251007] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251008] * CE16$POP2016[CE16$DAUID==35251008] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251009] * CE16$POP2016[CE16$DAUID==35251009] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251010] * CE16$POP2016[CE16$DAUID==35251010]) / finaldf$POP2016[finaldf$DAUID==35250155]), 0
+)
+#
+# DA = 35250171
+#
+finaldf$POP2016[finaldf$DAUID==35250171] <- (CE16$POP2016[CE16$DAUID==35251027] + CE16$POP2016[CE16$DAUID==35251028])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250171] <- (CE16$POP0TO142016[CE16$DAUID==35251027] + CE16$POP0TO142016[CE16$DAUID==35251028])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250171] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251027] * CE16$POP2016[CE16$DAUID==35251027] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251028] * CE16$POP2016[CE16$DAUID==35251028]) / finaldf$POP2016[finaldf$DAUID==35250171]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250171] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251027] * CE16$POP2016[CE16$DAUID==35251027] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251028] * CE16$POP2016[CE16$DAUID==35251028]) / finaldf$POP2016[finaldf$DAUID==35250171]), 0
+)
+#
+# DA = 35250174
+#
+finaldf$POP2016[finaldf$DAUID==35250174] <- (CE16$POP2016[CE16$DAUID==35251029] + CE16$POP2016[CE16$DAUID==35251030])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250174] <- (CE16$POP0TO142016[CE16$DAUID==35251029] + CE16$POP0TO142016[CE16$DAUID==35251030])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250174] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251029] * CE16$POP2016[CE16$DAUID==35251029] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251030] * CE16$POP2016[CE16$DAUID==35251030]) / finaldf$POP2016[finaldf$DAUID==35250174]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250174] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251029] * CE16$POP2016[CE16$DAUID==35251029] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251030] * CE16$POP2016[CE16$DAUID==35251030]) / finaldf$POP2016[finaldf$DAUID==35250174]), 0
+)
+```
+
+```{r}
+#
+# DA = 35250182
+# This was a simple rename to 25350982, except probably the edges changed.
+# I'm ingoring minor changes to DA boundaries, because that won't hurt me any more than
+# ignoring the ecological fallacy.
+#
+finaldf$POP2016[finaldf$DAUID==35250182] <- (CE16$POP2016[CE16$DAUID==35250982])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250182] <- (CE16$POP0TO142016[CE16$DAUID==35250982])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250182] <-     (CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250982])
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250182] <- (CE16$PERCLOWINC0TO5[CE16$DAUID==35250982])
+#
+# DA = 35250187
+#
+finaldf$POP2016[finaldf$DAUID==35250187] <- (CE16$POP2016[CE16$DAUID==35250985])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250187] <- (CE16$POP0TO142016[CE16$DAUID==35250985])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250187] <-     (CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250985])
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250187] <- (CE16$PERCLOWINC0TO5[CE16$DAUID==35250985])
+#
+# DA = 35250577
+#
+finaldf$POP2016[finaldf$DAUID==35250577] <- (CE16$POP2016[CE16$DAUID==35251011] + CE16$POP2016[CE16$DAUID==35251012] + CE16$POP2016[CE16$DAUID==35251013] + CE16$POP2016[CE16$DAUID==35251014] + CE16$POP2016[CE16$DAUID==35251015])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250577] <- (CE16$POP0TO142016[CE16$DAUID==35251011] + CE16$POP0TO142016[CE16$DAUID==35251012] + CE16$POP0TO142016[CE16$DAUID==35251013] + CE16$POP0TO142016[CE16$DAUID==35251014] + CE16$POP2016[CE16$DAUID==35251015])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250577] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251011] * CE16$POP2016[CE16$DAUID==35251011] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251012] * CE16$POP2016[CE16$DAUID==35251012] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251013] * CE16$POP2016[CE16$DAUID==35251013] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251014] * CE16$POP2016[CE16$DAUID==35251014] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251015] * CE16$POP2016[CE16$DAUID==35251015]) / finaldf$POP2016[finaldf$DAUID==35250577]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250577] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251011] * CE16$POP2016[CE16$DAUID==35251011] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251012] * CE16$POP2016[CE16$DAUID==35251012] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251013] * CE16$POP2016[CE16$DAUID==35251013] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251014] * CE16$POP2016[CE16$DAUID==35251014] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251015] * CE16$POP2016[CE16$DAUID==35251015]) / finaldf$POP2016[finaldf$DAUID==35250577]), 0
+)
+#
+# DA = 35250584
+#
+finaldf$POP2016[finaldf$DAUID==35250584] <- (CE16$POP2016[CE16$DAUID==35250998] + CE16$POP2016[CE16$DAUID==35250999])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250584] <- (CE16$POP0TO142016[CE16$DAUID==35250998] + CE16$POP0TO142016[CE16$DAUID==35250999])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250584] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250998] * CE16$POP2016[CE16$DAUID==35250998] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250999] * CE16$POP2016[CE16$DAUID==35250999]) / finaldf$POP2016[finaldf$DAUID==35250584]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250584] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35250998] * CE16$POP2016[CE16$DAUID==35250998] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250999] * CE16$POP2016[CE16$DAUID==35250999]) / finaldf$POP2016[finaldf$DAUID==35250584]), 0
+)
+#
+# DA = 35250653
+#
+finaldf$POP2016[finaldf$DAUID==35250653] <- (CE16$POP2016[CE16$DAUID==35251016] + CE16$POP2016[CE16$DAUID==35251017] + CE16$POP2016[CE16$DAUID==35251018])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250653] <- (CE16$POP0TO142016[CE16$DAUID==35251016] + CE16$POP0TO142016[CE16$DAUID==35251017] + CE16$POP0TO142016[CE16$DAUID==35251018])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250653] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251016] * CE16$POP2016[CE16$DAUID==35251016] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251017] * CE16$POP2016[CE16$DAUID==35251017] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251018] * CE16$POP2016[CE16$DAUID==35251018]) / finaldf$POP2016[finaldf$DAUID==35250653]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250653] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251016] * CE16$POP2016[CE16$DAUID==35251016] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251017] * CE16$POP2016[CE16$DAUID==35251017] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251018] * CE16$POP2016[CE16$DAUID==35251018]) / finaldf$POP2016[finaldf$DAUID==35250653]), 0
+)
+#
+# DA = 35250808
+#
+finaldf$POP2016[finaldf$DAUID==35250808] <- (CE16$POP2016[CE16$DAUID==35251019] + CE16$POP2016[CE16$DAUID==35251020] + CE16$POP2016[CE16$DAUID==35251021])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250808] <- (CE16$POP0TO142016[CE16$DAUID==35251019] + CE16$POP0TO142016[CE16$DAUID==35251020] + CE16$POP0TO142016[CE16$DAUID==35251021])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250808] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251019] * CE16$POP2016[CE16$DAUID==35251019] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251020] * CE16$POP2016[CE16$DAUID==35251020] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251021] * CE16$POP2016[CE16$DAUID==35251021]) / finaldf$POP2016[finaldf$DAUID==35250808]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250808] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251019] * CE16$POP2016[CE16$DAUID==35251019] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251020] * CE16$POP2016[CE16$DAUID==35251020] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251021] * CE16$POP2016[CE16$DAUID==35251021]) / finaldf$POP2016[finaldf$DAUID==35250808]), 0
+)
+#
+# DA = 35250809
+#
+finaldf$POP2016[finaldf$DAUID==35250809] <- (CE16$POP2016[CE16$DAUID==35251022] + CE16$POP2016[CE16$DAUID==35251023] + CE16$POP2016[CE16$DAUID==35251024])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250809] <- (CE16$POP0TO142016[CE16$DAUID==35251022] + CE16$POP0TO142016[CE16$DAUID==35251023] + CE16$POP0TO142016[CE16$DAUID==35251024])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250809] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251022] * CE16$POP2016[CE16$DAUID==35251022] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251023] * CE16$POP2016[CE16$DAUID==35251023] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251024] * CE16$POP2016[CE16$DAUID==35251024]) / finaldf$POP2016[finaldf$DAUID==35250809]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250809] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251022] * CE16$POP2016[CE16$DAUID==35251022] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251023] * CE16$POP2016[CE16$DAUID==35251023] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251024] * CE16$POP2016[CE16$DAUID==35251024]) / finaldf$POP2016[finaldf$DAUID==35250809]), 0
+)
+#
+# DA = 35250840
+#
+finaldf$POP2016[finaldf$DAUID==35250840] <- (CE16$POP2016[CE16$DAUID==35251025] + CE16$POP2016[CE16$DAUID==35251026])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250840] <- (CE16$POP0TO142016[CE16$DAUID==35251025] + CE16$POP0TO142016[CE16$DAUID==35251026])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250840] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251025] * CE16$POP2016[CE16$DAUID==35251025] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251026] * CE16$POP2016[CE16$DAUID==35251026]) / finaldf$POP2016[finaldf$DAUID==35250840]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250840] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251025] * CE16$POP2016[CE16$DAUID==35251025] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251026] * CE16$POP2016[CE16$DAUID==35251026]) / finaldf$POP2016[finaldf$DAUID==35250840]), 0
+)
+#
+# DA = 35850841
+#
+finaldf$POP2016[finaldf$DAUID==35250841] <- (CE16$POP2016[CE16$DAUID==35250990] + CE16$POP2016[CE16$DAUID==35250991] + CE16$POP2016[CE16$DAUID==35250992])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250841] <- (CE16$POP0TO142016[CE16$DAUID==35250990] + CE16$POP0TO142016[CE16$DAUID==35250991] + CE16$POP0TO142016[CE16$DAUID==35250992])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250841] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250990] * CE16$POP2016[CE16$DAUID==35250990] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250991] * CE16$POP2016[CE16$DAUID==35250991] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250992] * CE16$POP2016[CE16$DAUID==35250992]) / finaldf$POP2016[finaldf$DAUID==35250841]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250841] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35250990] * CE16$POP2016[CE16$DAUID==35250990] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250991] * CE16$POP2016[CE16$DAUID==35250991] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250992] * CE16$POP2016[CE16$DAUID==35250992]) / finaldf$POP2016[finaldf$DAUID==35250841]), 0
+)
+#
+# DA = 35250842
+#
+finaldf$POP2016[finaldf$DAUID==35250842] <- (CE16$POP2016[CE16$DAUID==35250986] + CE16$POP2016[CE16$DAUID==35250987])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250842] <- (CE16$POP0TO142016[CE16$DAUID==35250986] + CE16$POP0TO142016[CE16$DAUID==35250987])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250842] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250986] * CE16$POP2016[CE16$DAUID==35250986] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250987] * CE16$POP2016[CE16$DAUID==35250987]) / finaldf$POP2016[finaldf$DAUID==35250842]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250842] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35250986] * CE16$POP2016[CE16$DAUID==35250986] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250987] * CE16$POP2016[CE16$DAUID==35250987]) / finaldf$POP2016[finaldf$DAUID==35250842]), 0
+)
+#
+# DA = 35250844
+#
+# Unfortunately, one of the 2016 DAs that makes this up has an NA for income, so we'll
+# skip this one and strip it when we strip 2016 NAs at the end
+#
+# DA = 35250858
+# 
+finaldf$POP2016[finaldf$DAUID==35250858] <- (CE16$POP2016[CE16$DAUID==35251000] + CE16$POP2016[CE16$DAUID==35251001] + CE16$POP2016[CE16$DAUID==35251002])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250858] <- (CE16$POP0TO142016[CE16$DAUID==35251000] + CE16$POP0TO142016[CE16$DAUID==35251001] + CE16$POP0TO142016[CE16$DAUID==35251002])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250858] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251000] * CE16$POP2016[CE16$DAUID==35251000] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251001] * CE16$POP2016[CE16$DAUID==35251001] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251002] * CE16$POP2016[CE16$DAUID==35251002]) / finaldf$POP2016[finaldf$DAUID==35250858]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250858] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251000] * CE16$POP2016[CE16$DAUID==35251000] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251001] * CE16$POP2016[CE16$DAUID==35251001] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251002] * CE16$POP2016[CE16$DAUID==35251002]) / finaldf$POP2016[finaldf$DAUID==35250858]), 0
+)
+#
+# DA = 35250915
+#
+# Unfortunately, one of the 2016 DAs that makes this up has an NA for income too, so we'll
+# skip this one and strip it when we strip 2016 NAs at the end
+#
+# DA = 35250916
+# this next one's a monster, it got split into 6 DAs by 2016!
+#
+finaldf$POP2016[finaldf$DAUID==35250916] <- (CE16$POP2016[CE16$DAUID==35251033] + CE16$POP2016[CE16$DAUID==35251035] + CE16$POP2016[CE16$DAUID==35251036] + CE16$POP2016[CE16$DAUID==35251037] + CE16$POP2016[CE16$DAUID==35251038] + CE16$POP2016[CE16$DAUID==35251039])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250916] <- (CE16$POP0TO142016[CE16$DAUID==35251033] + CE16$POP0TO142016[CE16$DAUID==35251035] + CE16$POP0TO142016[CE16$DAUID==35251036] + CE16$POP0TO142016[CE16$DAUID==35251037] + CE16$POP2016[CE16$DAUID==35251038] + CE16$POP2016[CE16$DAUID==35251039])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250916] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251033] * CE16$POP2016[CE16$DAUID==35251033] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251035] * CE16$POP2016[CE16$DAUID==35251035] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251036] * CE16$POP2016[CE16$DAUID==35251036] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251037] * CE16$POP2016[CE16$DAUID==35251037] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251038] * CE16$POP2016[CE16$DAUID==35251038] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35251039] * CE16$POP2016[CE16$DAUID==35251039]) / finaldf$POP2016[finaldf$DAUID==35250916]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250916] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35251033] * CE16$POP2016[CE16$DAUID==35251033] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251035] * CE16$POP2016[CE16$DAUID==35251035] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251036] * CE16$POP2016[CE16$DAUID==35251036] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251037] * CE16$POP2016[CE16$DAUID==35251037] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251038] * CE16$POP2016[CE16$DAUID==35251038] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35251039] * CE16$POP2016[CE16$DAUID==35251039]) / finaldf$POP2016[finaldf$DAUID==35250916]), 0
+)
+#
+# DA = 35250917
+#
+finaldf$POP2016[finaldf$DAUID==35250917] <- (CE16$POP2016[CE16$DAUID==35250996] + CE16$POP2016[CE16$DAUID==35250997])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250917] <- (CE16$POP0TO142016[CE16$DAUID==35250996] + CE16$POP0TO142016[CE16$DAUID==35250997])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250917] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250996] * CE16$POP2016[CE16$DAUID==35250996] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250997] * CE16$POP2016[CE16$DAUID==35250997]) / finaldf$POP2016[finaldf$DAUID==35250917]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250917] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35250996] * CE16$POP2016[CE16$DAUID==35250996] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250997] * CE16$POP2016[CE16$DAUID==35250997]) / finaldf$POP2016[finaldf$DAUID==35250917]), 0
+)
+#
+# DA = 35250926
+#
+finaldf$POP2016[finaldf$DAUID==35250926] <- (CE16$POP2016[CE16$DAUID==35250976] + CE16$POP2016[CE16$DAUID==35250980])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250926] <- (CE16$POP0TO142016[CE16$DAUID==35250976] + CE16$POP0TO142016[CE16$DAUID==35250980])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250926] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250976] * CE16$POP2016[CE16$DAUID==35250976] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250980] * CE16$POP2016[CE16$DAUID==35250980]) / finaldf$POP2016[finaldf$DAUID==35250926]), 0
+)
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250926] <-     round(((CE16$PERCLOWINC0TO5[CE16$DAUID==35250976] * CE16$POP2016[CE16$DAUID==35250976] + CE16$PERCLOWINC0TO52016[CE16$DAUID==35250980] * CE16$POP2016[CE16$DAUID==35250980]) / finaldf$POP2016[finaldf$DAUID==35250926]), 0
+)
+#
+# DA = 35250927
+#
+finaldf$POP2016[finaldf$DAUID==35250927] <- (CE16$POP2016[CE16$DAUID==35250978])
+#
+finaldf$POP0TO142016[finaldf$DAUID==35250927] <- (CE16$POP0TO142016[CE16$DAUID==35250978])
+#
+finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250927] <-     (CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250978])
+#
+finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250927] <- (CE16$PERCLOWINC0TO5[CE16$DAUID==35250978])
+```
+
+```{r}
+# now we strip out all 2016 NAs
+#
+finaldf <- subset(finaldf, !is.na(AVGAFTERTAXINCHH2016))
+finaldf <- subset(finaldf, !is.na(PERCLOWINC0TO52016))
+finaldf <- subset(finaldf, AVGAFTERTAXINCHH2016>0)
+```
+
+So now we can calculate delta household after-tax income for each remaining DA, and delta pop 0-14 for each DA.
+
+I think right now that I want absolute delta pop 0 to 14 and not a proportion, because school enrolment is dependent on absolute numbers, not proportions. If not, I'll come back and change this code later.
+
+I also might want to split delta income categories into quintiles instead of simple above-below. We'll see; I just want to get a first regression _done_!
+
+```{r}
+finaldf$deltaincome <- finaldf$AVGAFTERTAXINCHH2016/finaldf$AVGAFTERTAXINCHH2006
+finaldf$deltaincoveravg <- as.integer(finaldf$deltaincome > finaldf$deltaincome[finaldf$DAUID==3525])
+```
+
+```{r}
+finaldf$deltapop0to14 <- finaldf$POP0TO142016 - finaldf$POP0TO142006
+```
+
+What's the final look like now?
+
+```{r}
+head(finaldf)
+```
+
+
+
+Now, all I need to do is make a list of which 2006 DAs lost a school by 2016, and which gained a school by 2016, and which had an old school demolished and rebuilt by 2016, which can all be done by hand in ArcGIS; then left_join that into this data frame, and I can do my probit.
+
+
