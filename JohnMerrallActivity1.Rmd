@@ -1,7 +1,7 @@
 ---
-title: "John Merrall Activity 1"
+title: "School Probit"
 author: "John Merrall"
-date: "20/09/2019"
+date: "04/10/2019"
 output: html_document
 ---
 
@@ -10,112 +10,25 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-# Main Research Interest
-
-I'm generally interested in anything to do with quantitative analysis and complexity in social science. 
-
-My MA thesis at this point will involve using spatial analysis to study the effect of school closures on housing prices.
-
-# Favourites
-
-## Favourite songs
-
-1. Mono "Requiem for Hell"
-2. Magma "Mekhanik Destruktiw Kommandoh"
-3. Clann "I Hold You"
-4. Our Last Night "Skyfall" (Adele cover)
-5. Alexandra Ungureanu & Nora Denes Symphonical "Hey Brother" (Avicii cover)
-
-## Favourite equation
-
-The trick for integrating the Gaussian by squaring it so you can integrate in polar:
-
-$$
-I = \sqrt{\int_{-\infty}^{\infty}e^{-x^2}dx\int_{-\infty}^{\infty}e^{-y^2}dy}
-$$
-
-## Favourite Artists
-
-I don't generally care about art.
-
-Name | Achievements
-- | - 
-Friedrich Nietzsche | basically invented postmodernism
-bill bissett | Canada's greatest living poet
-Mark Twain | gold standard of American literature
-Chuck Jones & Michael Maltese | created the greatest works of Bugs Bunny
-Jorge Luis Borges | did some neat stuff too I guess
-
-
-# A Chunk of Code
-
-## 1. A Cautionary Tale about regression
-
-I thought this was interesting, so why not spend a few minutes doing this first.
-
-
 ```{r}
-#
-# let's make a dataframe (tibble actually) with 20 independent variables, all random normal:
-#
-library(tidyverse)
-df <- tibble(
-y = rnorm(100),
-x1 = rnorm(100),
-x2 = rnorm(100),
-x3 = rnorm(100),
-x4 = rnorm(100),
-x5 = rnorm(100),
-x6 = rnorm(100),
-x7 = rnorm(100),
-x8 = rnorm(100),
-x9 = rnorm(100),
-x10 = rnorm(100),
-x11 = rnorm(100),
-x12 = rnorm(100),
-x13 = rnorm(100),
-x14 = rnorm(100),
-x15 = rnorm(100),
-x16 = rnorm(100),
-x17 = rnorm(100),
-x18 = rnorm(100),
-x19 = rnorm(100),
-x20 = rnorm(100)
-)
-#
-# apparently, if you regress a random y on a set of 20 random x, you will find that
-# there's usually two of the 20 variables that is significant at better than 10 percent!
-#
-p <- lm(formula = y ~ x1+x2+x3+x4+x5+x6+x7+x8+x9+x10+x11+x12+x13+x14+x15+x16+x17+x18+x19+x20, data = df)
-#
-# so what happens?
-#
-summary(p)
-
+library(dplyr)
 ```
 
-Yes, your F-stat should maybe sometimes sort of pick up that you're running a random regression, and so a bad p-value for your F-stat should protect you from erroneously finding a relationship between unrelated variables.
 
-However, one time that I did this, I got 2 variables with P<0.05, _plus_ one with p < 0.01, and even an f-stat with a p of 0.07. When I ran a second regression on just those 3 "significant" variables, the one's significance even went down to ~ p <0.0015, and the F-stat went down to p < 0.0002!!!
-
-Understand, these are _random_ numbers. Or, at least, numbers generated "randomly" on my PC using R.
-
-Thus, you don't want to stick variables willy-nilly into a regression. Some of them will come up spuriously significant just by chance.
-
-## 2. A Cautionary Tale about trying to do all the work in R
+## A school probit
 
 I want to do a probit on whether or not DAs that saw an increase or decrease in income or kid population, between 2006 and 2016, were more or less likely to lose their local public primary school to amalgamation.
 
 Let's start by trying to read and play with census data.
 
 ```{r}
-CENSUS2006DATA <- read.csv(file="C:/Users/me/Desktop/GRAD SCHOOL/GEOG 712/activity1/CENSUS2006DATA.csv", header=TRUE, sep=",")
-CENSUS2016DATA <- read.csv(file="C:/Users/me/Desktop/GRAD SCHOOL/GEOG 712/activity1/CENSUS2016DATA.csv", header=TRUE, sep=",")
+CENSUS2006DATA <- read.csv(file="CENSUS2006DATA.csv", header=TRUE, sep=",")
+CENSUS2016DATA <- read.csv(file="CENSUS2016DATA.csv", header=TRUE, sep=",")
 ```
 
 OK, that worked. 
 
-Now if we want to do a regression on delta income and delta children between 2006 and 2016, we first need to cut out all the 2006 NAs. This is easy to do in R.
+Now if we want to do a regression on delta income and delta children between 2006 and 2016, we first need to cut out all the NAs in 2006. This is easy to do in R.
 
 (We have to leave in all the 2016 NAs for now. We kill them later.)
 
@@ -162,11 +75,11 @@ CE16 <- CENSUS2016DATA %>%
 (in2006not2016 <- anti_join(CE06,CE16))
 ```
 
-Thankfully, this yields only the 2006 DAs that were split into smaller DAs in 2011 and 2016. I can confirm this because I had actually figured those out by hand in an excel file, using ArcGIS.
+Thankfully, this yields only the 23 DAs of 2006 that were split into smaller DAs in 2011 and 2016. I can confirm this because I had actually figured those out by hand in an excel file, using ArcGIS.
 
 So let's fake the 2016 pop etc. data for those 23 split 2006 DAs by hand. 
 
-I knew there was a better way to do this: aw_interpolate will do areal weighted "interpolation" of special features. In this case, "interpolation" would mostly involve just adding split DAs back together. However, these aren't sfs yet, they're still just excel, and I don't see why in this case I would want to bring in a whole bunch of geometry to do this work.
+I knew there was a better way to do this: aw_interpolate will do areal weighted "interpolation" of special features. I don't like doing this though.
 
 So let's do it the hard, stupid way. I could just have easily done the math in excel before loading the files in R, but at least you get to track all my math here.
 
@@ -497,7 +410,127 @@ head(finaldf)
 ```
 
 
+In ArcGIS, I did a spatial join between HWDSB elementary school catchments and DAs. The file created is called Join_Output. Afterwards, I went through and manually verified the condition of each DA, changing the MAX-CLOSED column values to suit the following rubric:
 
-Now, all I need to do is make a list of which 2006 DAs lost a school by 2016, and which gained a school by 2016, and which had an old school demolished and rebuilt by 2016, which can all be done by hand in ArcGIS; then left_join that into this data frame, and I can do my probit.
+0 - DA is completely outside closed catchment
+1 - DA is completely inside closed catchment
+2 - DA is about 70-90% inside closed catchment
+3 - DA is about 30-70% inside closed catchment
+4 - DA is maybe only 10-30% inside closed catchment
+9 - DA is outside closed catchment, but was labelled as inside because its border is sort of coincident with the closed catchment border and these 2 layers don't exactly tesselate.
+
+So let's start by loading Join_Output:
+
+```{r}
+library(sf)
+```
 
 
+```{r}
+DAgeometry <- st_read("./ArcGIS", layer = "Join_Output")
+```
+OK, something happened. Head?
+
+```{r}
+head(DAgeometry)
+```
+
+OK, so it has contents. Geometry?
+
+```{r}
+plot(st_geometry(DAgeometry))
+```
+
+OK, so it has contents and geometry. We might be able to work with this.
+
+Coerce DAgeometry DAUID into integer, apparently has to be done the long way round cos it's a factor now:
+
+```{r}
+DAgeometry <- mutate(DAgeometry, DAUID = as.integer(as.character(DAUID)))
+```
+
+```{r}
+head(DAgeometry)
+```
+
+These columns are annoying, I want to clean them up:
+
+
+```{r}
+DAs <- DAgeometry %>%
+select(DAUID, Max_CLOSED, geometry)
+```
+
+Now we join in the data:
+
+```{r}
+DAsj <- inner_join(DAs, finaldf)
+```
+
+DAsj has one less field than finaldf, because finaldf contains the summary row for 3525, i.e. the data sum for all Hamilton.
+
+I worry that an inner_join is bad, since it has erased all polygons that have NAs. We'll see later.
+
+Anyway, let's try plotting something thematically:
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+st_crs(DAsj)
+```
+
+
+
+```{r}
+ggplot(data = DAsj) + geom_sf(aes(fill = Max_CLOSED)) 
+```
+
+Now, I guess, we can just probit:
+
+Isschoolclosed ~ deltaincoveravg + deltapop0to14 + PERCLOWINC0TO52006
+
+So let's generate the first variable, first by taking any DA with Max_CLOSED = 1 or 2.
+
+```{r}
+DAsj$Isschoolclosed <- as.numeric(DAsj$Max_CLOSED==1 | DAsj$Max_CLOSED==2)
+```
+
+```{r}
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+
+## model summary
+summary(myprobit)
+
+```
+
+Let's do a smaller one based just on deltapopkids.
+
+```{r}
+myprobit <- glm(Isschoolclosed ~ deltapop0to14, family = binomial(link = "probit"), data = DAsj)
+
+## model summary
+summary(myprobit)
+```
+
+I don't get it, so let's look at a linear:
+
+```{r}
+a <- lm(Isschoolclosed ~ deltapop0to14, DAsj)
+summary(a)
+```
+
+Weird, let's plot this.
+
+```{r}
+ggplot(data = DAsj, aes(x = deltapop0to14, y = Isschoolclosed)) + geom_point()
+```
+
+```{r}
+ggplot(data = DAsj, aes(x = PERCLOWINC0TO52006, y = Isschoolclosed)) + geom_point()
+```
+
+```{r}
+ggplot(data = DAsj, aes(x = deltaincome, y = Isschoolclosed)) + geom_point()
+```
