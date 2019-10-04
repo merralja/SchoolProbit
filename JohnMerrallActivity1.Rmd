@@ -521,7 +521,18 @@ a <- lm(Isschoolclosed ~ deltapop0to14, DAsj)
 summary(a)
 ```
 
-Weird, let's plot this.
+Or a bigger linear:
+
+```{r}
+b <- lm(formula = Isschoolclosed ~ deltapop0to14 + deltaincome + PERCLOWINC0TO52006, data = DAsj)
+summary(b)
+```
+
+Again, delta income is the only one remotely significant. Which is funny if schools were being closed based on a low deltapopkids.
+
+Oh... except schools were also amalgamated & stayed open based on a low deltapopkids!! So Queen Vic and GR Allan weren't closed, they took in kids.
+
+So let's plot this.
 
 ```{r}
 ggplot(data = DAsj, aes(x = deltapop0to14, y = Isschoolclosed)) + geom_point()
@@ -534,3 +545,8 @@ ggplot(data = DAsj, aes(x = PERCLOWINC0TO52006, y = Isschoolclosed)) + geom_poin
 ```{r}
 ggplot(data = DAsj, aes(x = deltaincome, y = Isschoolclosed)) + geom_point()
 ```
+
+I should look at that dot top left and see what's going on there. That value is way out of order.
+
+
+
