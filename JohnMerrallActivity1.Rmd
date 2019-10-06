@@ -467,7 +467,7 @@ Now we join in the data:
 DAsj <- inner_join(DAs, finaldf)
 ```
 
-DAsj has one less field than finaldf, because finaldf contains the summary row for 3525, i.e. the data sum for all Hamilton.
+DAsj has one less row than finaldf, because finaldf contains the summary row for 3525, i.e. the data sum for all Hamilton.
 
 I worry that an inner_join is bad, since it has erased all polygons that have NAs. We'll see later.
 
@@ -484,7 +484,8 @@ st_crs(DAsj)
 
 
 ```{r}
-ggplot(data = DAsj) + geom_sf(aes(fill = Max_CLOSED)) 
+ggplot(data = DAsj) + geom_sf(aes(fill = Max_CLOSED)) +
+  coord_sf(xlim = c(582000, 600400), ylim = c(4785000, 4793300), expand = FALSE)
 ```
 
 Now, I guess, we can just probit:
@@ -497,6 +498,26 @@ So let's generate the first variable, first by taking any DA with Max_CLOSED = 1
 DAsj$Isschoolclosed <- as.numeric(DAsj$Max_CLOSED==1 | DAsj$Max_CLOSED==2)
 ```
 
+So here is a map of the areas where schools have closed (not including Bell Stone in east Glanbrook), trimmed so that you can see individual DA boundaries.
+
+```{r}
+ggplot(data = DAsj) + geom_sf(aes(fill = Isschoolclosed)) +
+  coord_sf(xlim = c(582000, 600400), ylim = c(4785000, 4793300), expand = FALSE)
+```
+
+And so you can pretty much see the schools that were closed: Central Park in Dundas, Prince Philip in West Hamilton, Woodward and Roxborough Park in the east city; Linden Park and Eastmount Park on the Mountain; and Gibson, King George and Stinson downtown.
+
+Before we do the probit, I'd like to look at some variables:
+
+```{r}
+ggplot(data = DAsj) + geom_sf(aes(fill = deltaincoveravg)) +
+  coord_sf(xlim = c(582000, 600400), ylim = c(4785000, 4793300), expand = FALSE)
+```
+
+YOu know, this looks pretty random, so later I'm going to want to do some area analysis on this later. Maybe I need to split deltaincome into more quantiles.
+
+Anyway, let's probit:
+
 ```{r}
 myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
 
@@ -504,6 +525,8 @@ myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + PERCLOWINC0TO5200
 summary(myprobit)
 
 ```
+
+So basically, right now it looks like the only significant variable is whether income later grew faster than average: Areas that saw less income growth were ones where the primary school distance increased.
 
 Let's do a smaller one based just on deltapopkids.
 
@@ -528,25 +551,31 @@ b <- lm(formula = Isschoolclosed ~ deltapop0to14 + deltaincome + PERCLOWINC0TO52
 summary(b)
 ```
 
-Again, delta income is the only one remotely significant. Which is funny if schools were being closed based on a low deltapopkids.
+Again, delta income is the only one remotely significant. Which is funny if schools were supposed to be closed based on a low deltapopkids.
 
-Oh... except schools were also amalgamated & stayed open based on a low deltapopkids!! So Queen Vic and GR Allan weren't closed, they took in kids.
+Oh... except schools were also amalgamated & stayed open based on a low deltapopkids!! So Queen Vic, Cathy Wever and GR Allan weren't closed, they took in kids from other catchments.
 
-So let's plot this.
+So if we want to regress on deltapop0to14, we need to include the other schools that took in kids next to the schools that closed. 
 
-```{r}
-ggplot(data = DAsj, aes(x = deltapop0to14, y = Isschoolclosed)) + geom_point()
-```
+But that's not diagnostic of anything anyway: we know that neighbourhoods projected to lose children were ones that had schools closed and amalgamated.
 
-```{r}
-ggplot(data = DAsj, aes(x = PERCLOWINC0TO52006, y = Isschoolclosed)) + geom_point()
-```
+Can we look specifically at "gentrification"? If a gentrifying neighbourhood is defined as one where average HH income grew faster than average AND kids decreased, then:
 
 ```{r}
-ggplot(data = DAsj, aes(x = deltaincome, y = Isschoolclosed)) + geom_point()
+DAsj$gent <- as.numeric(DAsj$deltaincoveravg==1) * as.numeric(DAsj$deltapop0to14<=0)
 ```
 
-I should look at that dot top left and see what's going on there. That value is way out of order.
+Let's regress that, though I don't know yet if I'm doing something wrong or bad here:
 
+```{r}
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + gent + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
 
+## model summary
+summary(myprobit)
+```
 
+Hm.
+
+This looks to me like neighbourhoods that saw their old school close from 2006 to 2016 gentrified more (p=0.11), and the faster income was increasing the less likely the school closed (p=0.02).
+
+This stuff should be refined in the next few days, but right now my back spasms are making this painful to write. Nap time for me.
