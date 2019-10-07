@@ -15,18 +15,18 @@ library(dplyr)
 ```
 
 
-## A school probit
+# A school probit
 
-I want to do a probit on whether or not DAs that saw an increase or decrease in income or kid population, between 2006 and 2016, were more or less likely to lose their local public primary school to amalgamation.
+I want to do a probit on whether or not DAs that saw an increase or decrease in income or youth population, between 2006 and 2016, were more or less likely to lose their local public primary school to amalgamation.
 
-Let's start by trying to read and play with census data.
+# 1. Data preprocessing
+
+Let's start by loading 2006 and 2016 census data, as downloaded from CHASS:
 
 ```{r}
 CENSUS2006DATA <- read.csv(file="CENSUS2006DATA.csv", header=TRUE, sep=",")
 CENSUS2016DATA <- read.csv(file="CENSUS2016DATA.csv", header=TRUE, sep=",")
 ```
-
-OK, that worked. 
 
 Now if we want to do a regression on delta income and delta children between 2006 and 2016, we first need to cut out all the NAs in 2006. This is easy to do in R.
 
@@ -39,23 +39,19 @@ CENSUS2006DATA <- subset(CENSUS2006DATA, !is.na(PERCLOWINC0TO5))
 #
 # for some weird reason, there's also areas with 0 reported average after tax income.
 # I guess I can't use those in my work either, if I want to calculate delta incomes!
+# So they have to go as well.
 #
 CENSUS2006DATA <- subset(CENSUS2006DATA, AVGAFTERTAXINC>0)
-
-#CENSUS2016DATA <- subset(CENSUS2016DATA, !is.na(AVGAFTERTAXINCOME))
-#CENSUS2016DATA <- subset(CENSUS2016DATA, !is.na(PERCLOWINC0TO5))
-#CENSUS2016DATA <- subset(CENSUS2016DATA, AVGAFTERTAXINCOME>0)
 ```
 
+Next, trim out some excess columns in the 2006 file, and rename some columns to make keeping track of variables easier:
+
 ```{r}
-# get rid of some of the excess columns in 2006
 head((CENSUS2006DATA <- CENSUS2006DATA %>%
 select(DAUID, POP2006, POP0TO14ADD, PERCLOWINC0TO5, AVGAFTERTAXINC)))
 # note I calculated pop0to14 outside of R in libreoffice before I started this work
 ```
 ```{r}
-#Now let's rename columns to make keeping track of stuff easier
-# we'll also cut the length of these file names
 CE06 <- CENSUS2006DATA %>% 
   rename(
     POP0TO142006 = POP0TO14ADD,
@@ -70,18 +66,19 @@ CE16 <- CENSUS2016DATA %>%
   )
 ```
 
+##Dealing with split DAs
+
+Now let's check which 2006 DAs disappeared by 2016, according to our two census files:
+
 ```{r}
-# Now that they're cleaned up, which 2006 DAs disappeared by 2016?
 (in2006not2016 <- anti_join(CE06,CE16))
 ```
 
-Thankfully, this yields only the 23 DAs of 2006 that were split into smaller DAs in 2011 and 2016. I can confirm this because I had actually figured those out by hand in an excel file, using ArcGIS.
+Thankfully, this yields only the 23 DAs of 2006 that were split into smaller DAs in 2011 and 2016. I have manually generated a list of split DAs, confirmed by inspection in ArcGIS, and it agrees with the above generated list.
 
 So let's fake the 2016 pop etc. data for those 23 split 2006 DAs by hand. 
 
-I knew there was a better way to do this: aw_interpolate will do areal weighted "interpolation" of special features. I don't like doing this though.
-
-So let's do it the hard, stupid way. I could just have easily done the math in excel before loading the files in R, but at least you get to track all my math here.
+I could just have easily done the math in excel before loading the files in R, but at least you get to track all my math here.
 
 ```{r}
 # the default for "merge" will do a join while dropping 2006 DAs found in from in2006not2016
@@ -100,9 +97,9 @@ finaldf$POP2016[finaldf$DAUID==35250063] <- (CE16$POP2016[CE16$DAUID==35250999] 
 finaldf$POP0TO142016[finaldf$DAUID==35250063] <- (CE16$POP0TO142016[CE16$DAUID==35250999] + CE16$POP0TO142016[CE16$DAUID==35250998])
 #
 # this is kludged, I should have downloaded number of households to average this properly
-# will fix it later
+# could fix it later
 # (though these are all new neighbourhoods, so we can assume in approximation that all the
-# households are uniform in size)
+# households are homogeneous in size)
 #
 finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250063] <-     round(((CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250999] * CE16$POP2016[CE16$DAUID==35250999] + CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250998] * CE16$POP2016[CE16$DAUID==35250998]) / finaldf$POP2016[finaldf$DAUID==35250063]), 0
 )
@@ -114,14 +111,12 @@ finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250063] <-     round(((CE16$PERCLOWI
 # 
 # now we just have to do this for the other 22 split DAs
 #
-# then we delete all the data that is NA in 2016
-# and then maybe we'll be able to do a regression! yay
+# then we delete all the data that is NA for 2016
 #
 ```
 
-Thus, I've illustrated one way in which it's a lot easier to do this stuff outside of R, in say ArcGIS or even in Excel. This would take me 15 minutes to get done for all 23 DAs in excel, but here I've had to spend about 10 hours learning things in R to do even just one DA - and I've already taken 2 R courses and I've been programming since the 1980s.
 
-Thankfully the other 22 DAs can be done sort of in a cut-and-paste way, only taking another 2 hours of coding.
+Thankfully the other 22 DAs can be done sort of in a cut-and-paste way.
 
 I think you would actually want to write a subroutine to utilize my excel file of DA changes, but that would require terminating a loop on an NA and I don't know how to do that yet.
 
@@ -392,14 +387,13 @@ So now we can calculate delta household after-tax income for each remaining DA, 
 
 I think right now that I want absolute delta pop 0 to 14 and not a proportion, because school enrolment is dependent on absolute numbers, not proportions. If not, I'll come back and change this code later.
 
-I also might want to split delta income categories into quintiles instead of simple above-below. We'll see; I just want to get a first regression _done_!
+I also might want to split delta income categories into quintiles instead of simple above-below - or maybe even change my delta income from simple above-below to some other cutoff. We'll see.
 
 ```{r}
+# calculated delta income, and the flag
 finaldf$deltaincome <- finaldf$AVGAFTERTAXINCHH2016/finaldf$AVGAFTERTAXINCHH2006
 finaldf$deltaincoveravg <- as.integer(finaldf$deltaincome > finaldf$deltaincome[finaldf$DAUID==3525])
-```
-
-```{r}
+# calculate delta pop 0 to 14
 finaldf$deltapop0to14 <- finaldf$POP0TO142016 - finaldf$POP0TO142006
 ```
 
@@ -409,8 +403,9 @@ What's the final look like now?
 head(finaldf)
 ```
 
+## Flagging DAs for school closure
 
-In ArcGIS, I did a spatial join between HWDSB elementary school catchments and DAs. The file created is called Join_Output. Afterwards, I went through and manually verified the condition of each DA, changing the MAX-CLOSED column values to suit the following rubric:
+In ArcGIS, I did a spatial join between HWDSB elementary school catchments and DAs. The file created is called Join_Output (included in the ArcGIS subdirectory). Afterwards, I went through and manually verified the condition of each DA, changing the MAX-CLOSED column values to suit the following rubric:
 
 0 - DA is completely outside closed catchment
 1 - DA is completely inside closed catchment
@@ -419,7 +414,11 @@ In ArcGIS, I did a spatial join between HWDSB elementary school catchments and D
 4 - DA is maybe only 10-30% inside closed catchment
 9 - DA is outside closed catchment, but was labelled as inside because its border is sort of coincident with the closed catchment border and these 2 layers don't exactly tesselate.
 
-So let's start by loading Join_Output:
+So now, we have a set of 2006 Dissemination Area polygons for Hamilton, and we can start looking at the data.
+
+# 2. Data exploration
+
+So let's start by loading Join_Output, the ArcGIS DA geometry file that includes flags for school closure:
 
 ```{r}
 library(sf)
@@ -429,39 +428,21 @@ library(sf)
 ```{r}
 DAgeometry <- st_read("./ArcGIS", layer = "Join_Output")
 ```
-OK, something happened. Head?
 
-```{r}
-head(DAgeometry)
-```
-
-OK, so it has contents. Geometry?
-
-```{r}
-plot(st_geometry(DAgeometry))
-```
-
-OK, so it has contents and geometry. We might be able to work with this.
-
-Coerce DAgeometry DAUID into integer, apparently has to be done the long way round cos it's a factor now:
+Coerce DAgeometry DAUID into integer, which apparently has to be done the long way round cos it's a factor:
 
 ```{r}
 DAgeometry <- mutate(DAgeometry, DAUID = as.integer(as.character(DAUID)))
 ```
 
-```{r}
-head(DAgeometry)
-```
-
-These columns are annoying, I want to clean them up:
-
+Delete extraneous columns:
 
 ```{r}
 DAs <- DAgeometry %>%
 select(DAUID, Max_CLOSED, geometry)
 ```
 
-Now we join in the data:
+Now we join in our 2006 census data from above:
 
 ```{r}
 DAsj <- inner_join(DAs, finaldf)
@@ -469,28 +450,18 @@ DAsj <- inner_join(DAs, finaldf)
 
 DAsj has one less row than finaldf, because finaldf contains the summary row for 3525, i.e. the data sum for all Hamilton.
 
-I worry that an inner_join is bad, since it has erased all polygons that have NAs. We'll see later.
+(I worry that an inner_join is bad, since it has erased all polygons that have NAs. We'll see later.)
 
-Anyway, let's try plotting something thematically:
 
 ```{r}
 library(ggplot2)
 ```
 
-```{r}
-st_crs(DAsj)
-```
+##First probit
 
+Now, I guess, we can probit:
 
-
-```{r}
-ggplot(data = DAsj) + geom_sf(aes(fill = Max_CLOSED)) +
-  coord_sf(xlim = c(582000, 600400), ylim = c(4785000, 4793300), expand = FALSE)
-```
-
-Now, I guess, we can just probit:
-
-Isschoolclosed ~ deltaincoveravg + deltapop0to14 + PERCLOWINC0TO52006
+pr(Isschoolclosed) ~ deltaincoveravg + deltapop0to14 + PERCLOWINC0TO52006
 
 So let's generate the first variable, first by taking any DA with Max_CLOSED = 1 or 2.
 
@@ -514,7 +485,7 @@ ggplot(data = DAsj) + geom_sf(aes(fill = deltaincoveravg)) +
   coord_sf(xlim = c(582000, 600400), ylim = c(4785000, 4793300), expand = FALSE)
 ```
 
-YOu know, this looks pretty random, so later I'm going to want to do some area analysis on this later. Maybe I need to split deltaincome into more quantiles.
+You know, the pattern of DAs who saw above-average household income increase looks rather random to me. Later I want to do some area analysis on this. Maybe I need to split deltaincome into more quantiles? Or maybe there's some problem with my calculations above.
 
 Anyway, let's probit:
 
@@ -526,7 +497,19 @@ summary(myprobit)
 
 ```
 
-So basically, right now it looks like the only significant variable is whether income later grew faster than average: Areas that saw less income growth were ones where the primary school distance increased.
+So basically, right now it looks like the only significant variable is whether income grew faster than average: Areas that saw less income growth were ones where the primary school closed.
+
+Discussion with AP on 7 Oct 2019 yielded that I should include POP0TO142006 and AVGAFTERTAXINCHH2006. Let's do that now:
+
+```{r}
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + AVGAFTERTAXINCHH2006 + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+summary(myprobit)
+```
+
+AP will like this! deltaincome is still a significant negative predictor of school closure, and (obviously, given richer people are in newer areas that see schools built, not torn down) average after-tax household income in 2006 is also a very significant negative predictor.
+
+However, percentage of kids in the neighbourhood below LICO (i.e., PERCLOWINC0TO52006) is a completely insignificant predictor, I mean wow, I've never seen p=0.998 before.
+
 
 Let's do a smaller one based just on deltapopkids.
 
