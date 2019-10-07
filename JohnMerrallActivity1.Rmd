@@ -502,45 +502,32 @@ So basically, right now it looks like the only significant variable is whether i
 Discussion with AP on 7 Oct 2019 yielded that I should include POP0TO142006 and AVGAFTERTAXINCHH2006. Let's do that now:
 
 ```{r}
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + AVGAFTERTAXINCHH2006 + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
 summary(myprobit)
 ```
 
-AP will like this! deltaincome is still a significant negative predictor of school closure, and (obviously, given richer people are in newer areas that see schools built, not torn down) average after-tax household income in 2006 is also a very significant negative predictor.
+AP will like this! deltaincome is still a significant negative predictor of school closure, and average after-tax household income in 2006 is also a very significant negative predictor.
 
-However, percentage of kids in the neighbourhood below LICO (i.e., PERCLOWINC0TO52006) is a completely insignificant predictor, I mean wow, I've never seen p=0.998 before.
+Of course, that second point pretty much stands to reason when new schools are built in the wealthy edge, while old schools are torn down in the poorer centre.
+
+##old stuff, may use later
 
 
-Let's do a smaller one based just on deltapopkids.
+
+
+
+Let's do a smaller probit based just kids population.
 
 ```{r}
-myprobit <- glm(Isschoolclosed ~ deltapop0to14, family = binomial(link = "probit"), data = DAsj)
-
-## model summary
+myprobit <- glm(Isschoolclosed ~ deltapop0to14 + POP0TO142006, family = binomial(link = "probit"), data = DAsj)
 summary(myprobit)
 ```
 
-I don't get it, so let's look at a linear:
+So in the above, schools are being closed in areas with a lower absolute population in the age-0-to-14 category in 2006. Rather, a DA with a larger number of kids will have a lower likelihood of closing.
 
-```{r}
-a <- lm(Isschoolclosed ~ deltapop0to14, DAsj)
-summary(a)
-```
+Note that schools were also amalgamated & stayed open based on a low deltapopkids!! So Queen Vic, Cathy Wever and GR Allan weren't closed, they took in kids from other catchments.
 
-Or a bigger linear:
-
-```{r}
-b <- lm(formula = Isschoolclosed ~ deltapop0to14 + deltaincome + PERCLOWINC0TO52006, data = DAsj)
-summary(b)
-```
-
-Again, delta income is the only one remotely significant. Which is funny if schools were supposed to be closed based on a low deltapopkids.
-
-Oh... except schools were also amalgamated & stayed open based on a low deltapopkids!! So Queen Vic, Cathy Wever and GR Allan weren't closed, they took in kids from other catchments.
-
-So if we want to regress on deltapop0to14, we need to include the other schools that took in kids next to the schools that closed. 
-
-But that's not diagnostic of anything anyway: we know that neighbourhoods projected to lose children were ones that had schools closed and amalgamated.
+##Gentrification?
 
 Can we look specifically at "gentrification"? If a gentrifying neighbourhood is defined as one where average HH income grew faster than average AND kids decreased, then:
 
@@ -548,10 +535,10 @@ Can we look specifically at "gentrification"? If a gentrifying neighbourhood is 
 DAsj$gent <- as.numeric(DAsj$deltaincoveravg==1) * as.numeric(DAsj$deltapop0to14<=0)
 ```
 
-Let's regress that, though I don't know yet if I'm doing something wrong or bad here:
+Let's add that to our full probit:
 
 ```{r}
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + gent + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + gent, family = binomial(link = "probit"), data = DAsj)
 
 ## model summary
 summary(myprobit)
@@ -559,6 +546,13 @@ summary(myprobit)
 
 Hm.
 
-This looks to me like neighbourhoods that saw their old school close from 2006 to 2016 gentrified more (p=0.11), and the faster income was increasing the less likely the school closed (p=0.02).
+This looks to me like neighbourhoods that saw their old school close from 2006 to 2016 gentrified more (p=0.13, I know that's not great but it is the vaguest of proof).
 
-This stuff should be refined in the next few days, but right now my back spasms are making this painful to write. Nap time for me.
+# Next to do
+
+1. I want to go thru the same for Catholic grade schools.
+
+2. As an aside, I want to do some area analysis of the census variables, because that checkerboard pattern for deltaincome concerns me. 
+
+
+
