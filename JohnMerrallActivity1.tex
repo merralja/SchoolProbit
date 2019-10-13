@@ -1,0 +1,1049 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={School Probit},
+            pdfauthor={John Merrall},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{School Probit}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{John Merrall}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{04/10/2019}
+
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'dplyr' was built under R version 3.6.1
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\hypertarget{a-school-probit}{%
+\section{A school probit}\label{a-school-probit}}
+
+I want to do a probit on whether or not DAs that saw an increase or
+decrease in income or youth population, between 2006 and 2016, were more
+or less likely to lose their local public primary school to
+amalgamation.
+
+\hypertarget{data-preprocessing}{%
+\section{1. Data preprocessing}\label{data-preprocessing}}
+
+Let's start by loading 2006 and 2016 census data, as downloaded from
+CHASS:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{CENSUS2006DATA <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\DataTypeTok{file=}\StringTok{"CENSUS2006DATA.csv"}\NormalTok{, }\DataTypeTok{header=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{sep=}\StringTok{","}\NormalTok{)}
+\NormalTok{CENSUS2016DATA <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\DataTypeTok{file=}\StringTok{"CENSUS2016DATA.csv"}\NormalTok{, }\DataTypeTok{header=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{sep=}\StringTok{","}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Now if we want to do a regression on delta income and delta children
+between 2006 and 2016, we first need to cut out all the NAs in 2006.
+This is easy to do in R.
+
+(We have to leave in all the 2016 NAs for now. We kill them later.)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{CENSUS2006DATA <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(CENSUS2006DATA, }\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(AVGAFTERTAXINC))}
+\NormalTok{CENSUS2006DATA <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(CENSUS2006DATA, }\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(PERCLOWINC0TO5))}
+\CommentTok{#}
+\CommentTok{# for some weird reason, there's also areas with 0 reported average after tax income.}
+\CommentTok{# I guess I can't use those in my work either, if I want to calculate delta incomes!}
+\CommentTok{# So they have to go as well.}
+\CommentTok{#}
+\NormalTok{CENSUS2006DATA <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(CENSUS2006DATA, AVGAFTERTAXINC}\OperatorTok{>}\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Next, trim out some excess columns in the 2006 file, and rename some
+columns to make keeping track of variables easier:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{((CENSUS2006DATA <-}\StringTok{ }\NormalTok{CENSUS2006DATA }\OperatorTok{%>%}
+\KeywordTok{select}\NormalTok{(DAUID, POP2006, POP0TO14ADD, PERCLOWINC0TO5, AVGAFTERTAXINC)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      DAUID POP2006 POP0TO14ADD PERCLOWINC0TO5 AVGAFTERTAXINC
+## 1     3525  504559       89895           21.4          57890
+## 2 35250030     426          65            0.0          52981
+## 3 35250031     536          95            0.0          77329
+## 4 35250032     647         130            0.0         108383
+## 5 35250033     679         115            0.0         102328
+## 6 35250034     712         120            0.0          64620
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# note I calculated pop0to14 outside of R in libreoffice before I started this work}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{CE06 <-}\StringTok{ }\NormalTok{CENSUS2006DATA }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{rename}\NormalTok{(}
+    \DataTypeTok{POP0TO142006 =}\NormalTok{ POP0TO14ADD,}
+    \DataTypeTok{PERCLOWINC0TO52006 =}\NormalTok{ PERCLOWINC0TO5,}
+    \DataTypeTok{AVGAFTERTAXINCHH2006 =}\NormalTok{ AVGAFTERTAXINC}
+\NormalTok{    )}
+\NormalTok{CE16 <-}\StringTok{ }\NormalTok{CENSUS2016DATA }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{rename}\NormalTok{(}
+    \DataTypeTok{POP0TO142016 =}\NormalTok{ POP0TO14,}
+    \DataTypeTok{PERCLOWINC0TO52016 =}\NormalTok{ PERCLOWINC0TO5,}
+    \DataTypeTok{AVGAFTERTAXINCHH2016 =}\NormalTok{ AVGAFTERTAXINCOME}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\#\#Dealing with split DAs
+
+Now let's check which 2006 DAs disappeared by 2016, according to our two
+census files:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(in2006not2016 <-}\StringTok{ }\KeywordTok{anti_join}\NormalTok{(CE06,CE16))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = "DAUID"
+\end{verbatim}
+
+\begin{verbatim}
+##       DAUID POP2006 POP0TO142006 PERCLOWINC0TO52006 AVGAFTERTAXINCHH2006
+## 1  35250063    1599          265                0.0               140138
+## 2  35250132    1423          255                0.0                64200
+## 3  35250154    2455          515                0.0                85894
+## 4  35250155    2111          555                0.0                88826
+## 5  35250171     613          105                0.0                79370
+## 6  35250174    1065          195                0.0                70765
+## 7  35250182     685          145                0.0                72556
+## 8  35250187    1089          280               20.0                92983
+## 9  35250577    3249          920                8.0                76686
+## 10 35250584    1747          460               19.6                66104
+## 11 35250653    1908          635               15.7                67018
+## 12 35250808    1620          410                0.0                77740
+## 13 35250809    2094          500                0.0                95781
+## 14 35250840    1624          435               54.3                42430
+## 15 35250841    1690          330               45.0                64375
+## 16 35250842    2320          540                0.0                96635
+## 17 35250844    3462          575                0.0                56024
+## 18 35250858    1512          365                0.0                78862
+## 19 35250915     671          185                0.0               107029
+## 20 35250916    1718          425                0.0                77768
+## 21 35250917    1890          300                0.0                62865
+## 22 35250926     554          105                0.0                55335
+## 23 35250927    1363          345                0.0                59681
+\end{verbatim}
+
+Thankfully, this yields only the 23 DAs of 2006 that were split into
+smaller DAs in 2011 and 2016. I have manually generated a list of split
+DAs, confirmed by inspection in ArcGIS, and it agrees with the above
+generated list.
+
+So let's fake the 2016 pop etc. data for those 23 split 2006 DAs by
+hand.
+
+I could just have easily done the math in excel before loading the files
+in R, but at least you get to track all my math here.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# the default for "merge" will do a join while dropping 2006 DAs found in from in2006not2016}
+\CommentTok{# so we have to keep those by saying all.x = "TRUE"}
+\CommentTok{# it also has no problem bringing "NA" data from 2016}
+\CommentTok{# so we will have to drop those later on}
+\CommentTok{#}
+\NormalTok{finaldf <-}\StringTok{ }\KeywordTok{merge}\NormalTok{(CE06, CE16, }\DataTypeTok{by =} \StringTok{"DAUID"}\NormalTok{, }\DataTypeTok{all.x =} \StringTok{"TRUE"}\NormalTok{)}
+\CommentTok{# now we add in all the split-DA data by hand}
+\CommentTok{# ONE AT A TIME}
+\CommentTok{#}
+\CommentTok{# DAUID==35250063}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250063}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250063}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{])}
+\CommentTok{#}
+\CommentTok{# this is kludged, I should have downloaded number of households to average this properly}
+\CommentTok{# could fix it later}
+\CommentTok{# (though these are all new neighbourhoods, so we can assume in approximation that all the}
+\CommentTok{# households are homogeneous in size)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250063}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250063}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# and for perclowinc0to5, this really does just take population proportions to solve}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250063}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250063}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{# }
+\CommentTok{# now we just have to do this for the other 22 split DAs}
+\CommentTok{#}
+\CommentTok{# then we delete all the data that is NA for 2016}
+\CommentTok{#}
+\end{Highlighting}
+\end{Shaded}
+
+Thankfully the other 22 DAs can be done sort of in a cut-and-paste way.
+
+I think you would actually want to write a subroutine to utilize my
+excel file of DA changes, but that would require terminating a loop on
+an NA and I don't know how to do that yet.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# so let's do all the rest here.}
+\CommentTok{#}
+\CommentTok{# DA = 35250132}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250132}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250981}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250132}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250981}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250132}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250981}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250981}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250132}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250132}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250981}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250981}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250132}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250154}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250154}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251003}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251004}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251005}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251006}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250154}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251003}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251004}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251005}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251006}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250154}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251003}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251003}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251004}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251004}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251005}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251005}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251006}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251006}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250154}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250154}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251003}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251003}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251004}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251004}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251005}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251005}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251006}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251006}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250154}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250155}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250155}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251007}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251008}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251009}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251010}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250155}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251007}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251008}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251009}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251010}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250155}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251007}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251007}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251008}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251008}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251009}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251009}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251010}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251010}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250155}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250155}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251007}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251007}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251008}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251008}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251009}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251009}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251010}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251010}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250155}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250171}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250171}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251027}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251028}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250171}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251027}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251028}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250171}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251027}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251027}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251028}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251028}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250171}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250171}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251027}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251027}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251028}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251028}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250171}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250174}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250174}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251029}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251030}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250174}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251029}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251030}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250174}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251029}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251029}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251030}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251030}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250174}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250174}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251029}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251029}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251030}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251030}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250174}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#}
+\CommentTok{# DA = 35250182}
+\CommentTok{# This was a simple rename to 25350982, except probably the edges changed.}
+\CommentTok{# I'm ingoring minor changes to DA boundaries, because that won't hurt me any more than}
+\CommentTok{# ignoring the ecological fallacy.}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250182}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250182}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250182}\NormalTok{] <-}\StringTok{     }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250182}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250982}\NormalTok{])}
+\CommentTok{#}
+\CommentTok{# DA = 35250187}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250187}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250985}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250187}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250985}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250187}\NormalTok{] <-}\StringTok{     }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250985}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250187}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250985}\NormalTok{])}
+\CommentTok{#}
+\CommentTok{# DA = 35250577}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250577}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251011}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251012}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251013}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251014}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251015}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250577}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251011}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251012}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251013}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251014}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251015}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250577}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251011}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251011}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251012}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251012}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251013}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251013}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251014}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251014}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251015}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251015}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250577}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250577}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251011}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251011}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251012}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251012}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251013}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251013}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251014}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251014}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251015}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251015}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250577}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250584}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250584}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250584}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250584}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250584}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250584}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250998}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250999}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250584}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250653}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250653}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251016}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251017}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251018}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250653}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251016}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251017}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251018}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250653}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251016}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251016}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251017}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251017}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251018}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251018}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250653}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250653}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251016}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251016}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251017}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251017}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251018}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251018}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250653}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250808}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250808}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251019}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251020}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251021}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250808}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251019}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251020}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251021}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250808}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251019}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251019}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251020}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251020}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251021}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251021}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250808}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250808}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251019}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251019}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251020}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251020}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251021}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251021}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250808}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250809}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250809}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251022}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251023}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251024}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250809}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251022}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251023}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251024}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250809}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251022}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251022}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251023}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251023}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251024}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251024}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250809}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250809}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251022}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251022}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251023}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251023}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251024}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251024}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250809}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250840}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250840}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251025}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251026}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250840}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251025}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251026}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250840}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251025}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251025}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251026}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251026}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250840}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250840}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251025}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251025}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251026}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251026}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250840}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35850841}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250841}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250990}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250991}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250992}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250841}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250990}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250991}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250992}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250841}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250990}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250990}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250991}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250991}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250992}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250992}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250841}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250841}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250990}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250990}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250991}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250991}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250992}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250992}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250841}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250842}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250842}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250986}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250987}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250842}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250986}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250987}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250842}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250986}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250986}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250987}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250987}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250842}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250842}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250986}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250986}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250987}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250987}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250842}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250844}
+\CommentTok{#}
+\CommentTok{# Unfortunately, one of the 2016 DAs that makes this up has an NA for income, so we'll}
+\CommentTok{# skip this one and strip it when we strip 2016 NAs at the end}
+\CommentTok{#}
+\CommentTok{# DA = 35250858}
+\CommentTok{# }
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250858}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251000}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251001}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251002}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250858}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251000}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251001}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251002}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250858}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251000}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251000}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251001}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251001}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251002}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251002}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250858}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250858}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251000}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251000}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251001}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251001}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251002}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251002}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250858}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250915}
+\CommentTok{#}
+\CommentTok{# Unfortunately, one of the 2016 DAs that makes this up has an NA for income too, so we'll}
+\CommentTok{# skip this one and strip it when we strip 2016 NAs at the end}
+\CommentTok{#}
+\CommentTok{# DA = 35250916}
+\CommentTok{# this next one's a monster, it got split into 6 DAs by 2016!}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250916}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251033}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251035}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251036}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251037}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251038}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251039}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250916}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251033}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251035}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251036}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251037}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251038}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251039}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250916}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251033}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251033}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251035}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251035}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251036}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251036}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251037}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251037}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251038}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251038}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251039}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251039}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250916}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250916}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251033}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251033}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251035}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251035}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251036}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251036}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251037}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251037}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251038}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251038}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251039}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35251039}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250916}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250917}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250917}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250996}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250997}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250917}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250996}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250997}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250917}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250996}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250996}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250997}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250997}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250917}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250917}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250996}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250996}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250997}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250997}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250917}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250926}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250926}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250976}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250980}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250926}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250976}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250980}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250926}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250976}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250976}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250980}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250980}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250926}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250926}\NormalTok{] <-}\StringTok{     }\KeywordTok{round}\NormalTok{(((CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250976}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250976}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250980}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250980}\NormalTok{]) }\OperatorTok{/}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250926}\NormalTok{]), }\DecValTok{0}
+\NormalTok{)}
+\CommentTok{#}
+\CommentTok{# DA = 35250927}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250927}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250978}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250927}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{POP0TO142016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250978}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250927}\NormalTok{] <-}\StringTok{     }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250978}\NormalTok{])}
+\CommentTok{#}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{PERCLOWINC0TO52016[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250927}\NormalTok{] <-}\StringTok{ }\NormalTok{(CE16}\OperatorTok{$}\NormalTok{PERCLOWINC0TO5[CE16}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{35250978}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# now we strip out all 2016 NAs}
+\CommentTok{#}
+\NormalTok{finaldf <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(finaldf, }\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(AVGAFTERTAXINCHH2016))}
+\NormalTok{finaldf <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(finaldf, }\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(PERCLOWINC0TO52016))}
+\NormalTok{finaldf <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(finaldf, AVGAFTERTAXINCHH2016}\OperatorTok{>}\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+So now we can calculate delta household after-tax income for each
+remaining DA, and delta pop 0-14 for each DA.
+
+I think right now that I want absolute delta pop 0 to 14 and not a
+proportion, because school enrolment is dependent on absolute numbers,
+not proportions. If not, I'll come back and change this code later.
+
+I also might want to split delta income categories into quintiles
+instead of simple above-below - or maybe even change my delta income
+from simple above-below to some other cutoff. We'll see.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# calculated delta income, and the flag}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{deltaincome <-}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2016}\OperatorTok{/}\NormalTok{finaldf}\OperatorTok{$}\NormalTok{AVGAFTERTAXINCHH2006}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{deltaincoveravg <-}\StringTok{ }\KeywordTok{as.integer}\NormalTok{(finaldf}\OperatorTok{$}\NormalTok{deltaincome }\OperatorTok{>}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{deltaincome[finaldf}\OperatorTok{$}\NormalTok{DAUID}\OperatorTok{==}\DecValTok{3525}\NormalTok{])}
+\CommentTok{# calculate delta pop 0 to 14}
+\NormalTok{finaldf}\OperatorTok{$}\NormalTok{deltapop0to14 <-}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142016 }\OperatorTok{-}\StringTok{ }\NormalTok{finaldf}\OperatorTok{$}\NormalTok{POP0TO142006}
+\end{Highlighting}
+\end{Shaded}
+
+What's the final look like now?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(finaldf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      DAUID POP2006 POP0TO142006 PERCLOWINC0TO52006 AVGAFTERTAXINCHH2006
+## 1     3525  504559        89895               21.4                57890
+## 2 35250030     426           65                0.0                52981
+## 3 35250031     536           95                0.0                77329
+## 4 35250032     647          130                0.0               108383
+## 5 35250033     679          115                0.0               102328
+## 6 35250034     712          120                0.0                64620
+##   POP2016 POP0TO142016 AVGAFTERTAXINCHH2016 PERCLOWINC0TO52016 deltaincome
+## 1  536917        87120                73524               17.3    1.270064
+## 2     402           50                82340                0.0    1.554142
+## 3     468           75               109975                0.0    1.422170
+## 4     614           95               113852                0.0    1.050460
+## 5     627          105               113490                0.0    1.109081
+## 6     680          105                74337               12.5    1.150371
+##   deltaincoveravg deltapop0to14
+## 1               0         -2775
+## 2               1           -15
+## 3               1           -20
+## 4               0           -35
+## 5               0           -10
+## 6               0           -15
+\end{verbatim}
+
+\hypertarget{flagging-das-for-school-closure}{%
+\subsection{Flagging DAs for school
+closure}\label{flagging-das-for-school-closure}}
+
+In ArcGIS, I did a spatial join between HWDSB elementary school
+catchments and DAs. The file created is called Join\_Output (included in
+the ArcGIS subdirectory). Afterwards, I went through and manually
+verified the condition of each DA, changing the MAX-CLOSED column values
+to suit the following rubric:
+
+0 - DA is completely outside closed catchment 1 - DA is completely
+inside closed catchment 2 - DA is about 70-90\% inside closed catchment
+3 - DA is about 30-70\% inside closed catchment 4 - DA is maybe only
+10-30\% inside closed catchment 9 - DA is outside closed catchment, but
+was labelled as inside because its border is sort of coincident with the
+closed catchment border and these 2 layers don't exactly tesselate.
+
+So now, we have a set of 2006 Dissemination Area polygons for Hamilton,
+and we can start looking at the data.
+
+\hypertarget{data-exploration}{%
+\section{2. Data exploration}\label{data-exploration}}
+
+So let's start by loading Join\_Output, the ArcGIS DA geometry file that
+includes flags for school closure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(sf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'sf' was built under R version 3.6.1
+\end{verbatim}
+
+\begin{verbatim}
+## Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DAgeometry <-}\StringTok{ }\KeywordTok{st_read}\NormalTok{(}\StringTok{"./ArcGIS"}\NormalTok{, }\DataTypeTok{layer =} \StringTok{"Join_Output"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Reading layer `Join_Output' from data source `C:\Users\me\Documents\GitHub\SchoolProbit\ArcGIS' using driver `ESRI Shapefile'
+## Simple feature collection with 845 features and 17 fields
+## geometry type:  POLYGON
+## dimension:      XY
+## bbox:           xmin: 560903.9 ymin: 4767183 xmax: 611899 ymax: 4813581
+## epsg (SRID):    26917
+## proj4string:    +proj=utm +zone=17 +datum=NAD83 +units=m +no_defs
+\end{verbatim}
+
+Coerce DAgeometry DAUID into integer, which apparently has to be done
+the long way round cos it's a factor:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DAgeometry <-}\StringTok{ }\KeywordTok{mutate}\NormalTok{(DAgeometry, }\DataTypeTok{DAUID =} \KeywordTok{as.integer}\NormalTok{(}\KeywordTok{as.character}\NormalTok{(DAUID)))}
+\end{Highlighting}
+\end{Shaded}
+
+Delete extraneous columns:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DAs <-}\StringTok{ }\NormalTok{DAgeometry }\OperatorTok{%>%}
+\KeywordTok{select}\NormalTok{(DAUID, Max_CLOSED, geometry)}
+\end{Highlighting}
+\end{Shaded}
+
+Now we join in our 2006 census data from above:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DAsj <-}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(DAs, finaldf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = "DAUID"
+\end{verbatim}
+
+DAsj has one less row than finaldf, because finaldf contains the summary
+row for 3525, i.e.~the data sum for all Hamilton.
+
+(I worry that an inner\_join is bad, since it has erased all polygons
+that have NAs. We'll see later.)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'ggplot2' was built under R version 3.6.1
+\end{verbatim}
+
+\#\#First probit
+
+Now, I guess, we can probit:
+
+pr(Isschoolclosed) \textasciitilde{} deltaincoveravg + deltapop0to14 +
+PERCLOWINC0TO52006
+
+So let's generate the first variable, first by taking any DA with
+Max\_CLOSED = 1 or 2.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DAsj}\OperatorTok{$}\NormalTok{Isschoolclosed <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(DAsj}\OperatorTok{$}\NormalTok{Max_CLOSED}\OperatorTok{==}\DecValTok{1} \OperatorTok{|}\StringTok{ }\NormalTok{DAsj}\OperatorTok{$}\NormalTok{Max_CLOSED}\OperatorTok{==}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+So here is a map of the areas where schools have closed (not including
+Bell Stone in east Glanbrook), trimmed so that you can see individual DA
+boundaries.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ DAsj) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_sf}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ Isschoolclosed)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_sf}\NormalTok{(}\DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{582000}\NormalTok{, }\DecValTok{600400}\NormalTok{), }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{4785000}\NormalTok{, }\DecValTok{4793300}\NormalTok{), }\DataTypeTok{expand =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{JohnMerrallActivity1_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+And so you can pretty much see the schools that were closed: Central
+Park in Dundas, Prince Philip in West Hamilton, Woodward and Roxborough
+Park in the east city; Linden Park and Eastmount Park on the Mountain;
+and Gibson, King George and Stinson downtown.
+
+Before we do the probit, I'd like to look at some variables:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ DAsj) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_sf}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ deltaincoveravg)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_sf}\NormalTok{(}\DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{582000}\NormalTok{, }\DecValTok{600400}\NormalTok{), }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{4785000}\NormalTok{, }\DecValTok{4793300}\NormalTok{), }\DataTypeTok{expand =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{JohnMerrallActivity1_files/figure-latex/unnamed-chunk-21-1.pdf}
+
+You know, the pattern of DAs who saw above-average household income
+increase looks rather random to me. Later I want to do some area
+analysis on this. Maybe I need to split deltaincome into more quantiles?
+Or maybe there's some problem with my calculations above.
+
+Anyway, let's probit:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myprobit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(Isschoolclosed }\OperatorTok{~}\StringTok{ }\NormalTok{deltaincome }\OperatorTok{+}\StringTok{ }\NormalTok{deltapop0to14 }\OperatorTok{+}\StringTok{ }\NormalTok{PERCLOWINC0TO52006, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{"probit"}\NormalTok{), }\DataTypeTok{data =}\NormalTok{ DAsj)}
+
+\CommentTok{## model summary}
+\KeywordTok{summary}\NormalTok{(myprobit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = Isschoolclosed ~ deltaincome + deltapop0to14 + 
+##     PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.6149  -0.4270  -0.3903  -0.3462   2.4649  
+## 
+## Coefficients:
+##                     Estimate Std. Error z value Pr(>|z|)  
+## (Intercept)        -0.626657   0.447590  -1.400   0.1615  
+## deltaincome        -0.679429   0.361496  -1.879   0.0602 .
+## deltapop0to14      -0.001300   0.001407  -0.924   0.3555  
+## PERCLOWINC0TO52006  0.002455   0.002831   0.867   0.3859  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 432.17  on 805  degrees of freedom
+## Residual deviance: 426.50  on 802  degrees of freedom
+## AIC: 434.5
+## 
+## Number of Fisher Scoring iterations: 8
+\end{verbatim}
+
+So basically, right now it looks like the only significant variable is
+whether income grew faster than average: Areas that saw less income
+growth were ones where the primary school closed.
+
+Discussion with AP on 7 Oct 2019 yielded that I should include
+POP0TO142006 and AVGAFTERTAXINCHH2006. Let's do that now:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myprobit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(Isschoolclosed }\OperatorTok{~}\StringTok{ }\NormalTok{deltaincome }\OperatorTok{+}\StringTok{ }\NormalTok{deltapop0to14 }\OperatorTok{+}\StringTok{ }\NormalTok{POP0TO142006 }\OperatorTok{+}\StringTok{ }\KeywordTok{log}\NormalTok{(AVGAFTERTAXINCHH2006) }\OperatorTok{+}\StringTok{ }\NormalTok{PERCLOWINC0TO52006, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{"probit"}\NormalTok{), }\DataTypeTok{data =}\NormalTok{ DAsj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(myprobit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = Isschoolclosed ~ deltaincome + deltapop0to14 + 
+##     POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, 
+##     family = binomial(link = "probit"), data = DAsj)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.9322  -0.4383  -0.3501  -0.2544   2.8310  
+## 
+## Coefficients:
+##                            Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)                9.259869   2.594619   3.569 0.000359 ***
+## deltaincome               -0.966348   0.403415  -2.395 0.016601 *  
+## deltapop0to14             -0.002978   0.002694  -1.106 0.268940    
+## POP0TO142006              -0.002044   0.001470  -1.390 0.164490    
+## log(AVGAFTERTAXINCHH2006) -0.857133   0.225809  -3.796 0.000147 ***
+## PERCLOWINC0TO52006        -0.001029   0.003296  -0.312 0.754960    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 432.17  on 805  degrees of freedom
+## Residual deviance: 405.67  on 800  degrees of freedom
+## AIC: 417.67
+## 
+## Number of Fisher Scoring iterations: 8
+\end{verbatim}
+
+AP will like this! deltaincome is still a significant negative predictor
+of school closure, and average after-tax household income in 2006 is
+also a very significant negative predictor.
+
+Of course, that second point pretty much stands to reason when new
+schools are built in the wealthy edge, while old schools are torn down
+in the poorer centre.
+
+\#\#old stuff, may use later
+
+Let's do a smaller probit based just kids population.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myprobit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(Isschoolclosed }\OperatorTok{~}\StringTok{ }\NormalTok{deltapop0to14 }\OperatorTok{+}\StringTok{ }\NormalTok{POP0TO142006, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{"probit"}\NormalTok{), }\DataTypeTok{data =}\NormalTok{ DAsj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(myprobit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = Isschoolclosed ~ deltapop0to14 + POP0TO142006, 
+##     family = binomial(link = "probit"), data = DAsj)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.4947  -0.4271  -0.4057  -0.3634   2.8678  
+## 
+## Coefficients:
+##                Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)   -1.191804   0.137811  -8.648   <2e-16 ***
+## deltapop0to14 -0.002945   0.002363  -1.246   0.2126    
+## POP0TO142006  -0.002788   0.001392  -2.004   0.0451 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 432.17  on 805  degrees of freedom
+## Residual deviance: 425.31  on 803  degrees of freedom
+## AIC: 431.31
+## 
+## Number of Fisher Scoring iterations: 8
+\end{verbatim}
+
+So in the above, schools are being closed in areas with a lower absolute
+population in the age-0-to-14 category in 2006. Rather, a DA with a
+larger number of kids will have a lower likelihood of closing.
+
+Note that schools were also amalgamated \& stayed open based on a low
+deltapopkids!! So Queen Vic, Cathy Wever and GR Allan weren't closed,
+they took in kids from other catchments.
+
+\#\#Gentrification?
+
+Can we look specifically at ``gentrification''? If a gentrifying
+neighbourhood is defined as one where average HH income grew faster than
+average AND kids decreased, then:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DAsj}\OperatorTok{$}\NormalTok{gent <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(DAsj}\OperatorTok{$}\NormalTok{deltaincoveravg}\OperatorTok{==}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(DAsj}\OperatorTok{$}\NormalTok{deltapop0to14}\OperatorTok{<=}\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Let's add that to our full probit:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{myprobit <-}\StringTok{ }\KeywordTok{glm}\NormalTok{(Isschoolclosed }\OperatorTok{~}\StringTok{ }\NormalTok{deltaincome }\OperatorTok{+}\StringTok{ }\NormalTok{deltapop0to14 }\OperatorTok{+}\StringTok{ }\NormalTok{POP0TO142006 }\OperatorTok{+}\StringTok{ }\KeywordTok{log}\NormalTok{(AVGAFTERTAXINCHH2006) }\OperatorTok{+}\StringTok{ }\NormalTok{PERCLOWINC0TO52006 }\OperatorTok{+}\StringTok{ }\NormalTok{gent, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{"probit"}\NormalTok{), }\DataTypeTok{data =}\NormalTok{ DAsj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## model summary}
+\KeywordTok{summary}\NormalTok{(myprobit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = Isschoolclosed ~ deltaincome + deltapop0to14 + 
+##     POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + 
+##     gent, family = binomial(link = "probit"), data = DAsj)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.9617  -0.4368  -0.3448  -0.2487   2.8582  
+## 
+## Coefficients:
+##                            Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)                9.751885   2.629755   3.708 0.000209 ***
+## deltaincome               -1.463879   0.536239  -2.730 0.006335 ** 
+## deltapop0to14             -0.002019   0.002633  -0.767 0.443311    
+## POP0TO142006              -0.001894   0.001453  -1.304 0.192308    
+## log(AVGAFTERTAXINCHH2006) -0.854672   0.225533  -3.790 0.000151 ***
+## PERCLOWINC0TO52006        -0.001022   0.003300  -0.310 0.756868    
+## gent                       0.298462   0.198011   1.507 0.131734    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 432.17  on 805  degrees of freedom
+## Residual deviance: 403.33  on 799  degrees of freedom
+## AIC: 417.33
+## 
+## Number of Fisher Scoring iterations: 8
+\end{verbatim}
+
+Hm.
+
+This looks to me like neighbourhoods that saw their old school close
+from 2006 to 2016 gentrified more (p=0.13, I know that's not great but
+it is the vaguest of proof).
+
+\hypertarget{next-to-do}{%
+\section{Next to do}\label{next-to-do}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  I want to go thru the same for Catholic grade schools.
+\item
+  As an aside, I want to do some area analysis of the census variables,
+  because that checkerboard pattern for deltaincome concerns me.
+\end{enumerate}
+
+
+\end{document}
