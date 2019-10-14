@@ -38,6 +38,7 @@ CENSUS2006DATA <- subset(CENSUS2006DATA, !is.na(PERCLOWINC0TO5))
 CENSUS2006DATA <- subset(CENSUS2006DATA, AVGAFTERTAXINC>0)
 ```
 
+
 Next, we need to trim out some excess columns in the 2006 file, and rename some columns to make keeping track of variables easier:
 
 ```{r trim-columns, echo = FALSE, message = FALSE, warning=FALSE}
@@ -439,10 +440,14 @@ DAsj$Isschoolclosed <- as.numeric(DAsj$Max_CLOSED==1 | DAsj$Max_CLOSED==2)
 
 So here is a zoomable map of the areas where schools have closed.
 
+```{r load-tmap, echo = FALSE, message = FALSE, warning=FALSE}
+library(tmap)
+```
+
+
 
 ```{r zoomable-map, echo = FALSE, message = FALSE, warning=FALSE}
 tmap_mode("view")
-#qtm(ridings, fill = "Isschoolclosed")
 pal1 <- c("green", "red")
 tm_shape(DAsj) + tm_polygons("Isschoolclosed", palette = pal1)
 ```
@@ -452,13 +457,23 @@ And so you can pretty much see the schools that were closed: Central Park in Dun
 
 Before we do the probit, I'd like to look at some variables:
 
+
+
 ```{r zoomable-maps, echo = FALSE, message = FALSE, warning=FALSE}
 tmap_mode("view")
-tm_shape(DAsj) + tm_polygons(c("deltapop0to14", "deltaincome")) +
+tm_shape(DAsj) +
+tm_fill(c("deltapop0to14", "deltaincome"),title=c("Delta 0 to 14 pop", "delta income"), n=c(6,10), style=c("quantile", "jenks"), palette="YlOrBr") +  
   tm_facets(sync = TRUE, ncol = 2)
 ```
 
-Later I want to do some area analysis on this. The 2 maps are a bit uninformative, since deltapop0to14 is skewed by a couple areas of higher settlement, and deltaincome is skewed by the area around the airport (which has seen a couple large mansions get built in the past 10-15 years, though I don't think 2 high income earners can skew a DA income by that much.)
+```{r zoomable-income, echo = FALSE, message = FALSE, warning=FALSE}
+tmap_mode("view")
+tm_shape(DAsj) + tm_polygons(c("AVGAFTERTAXINCHH2006", "PERCLOWINC0TO52006"),n=c(6,6)) +
+  tm_facets(sync = TRUE, ncol = 2)
+```
+
+
+Later I want to do some area analysis on this. The maps are a bit uninformative: deltapop0to14 is skewed by a couple areas of higher settlement, and deltaincome is skewed by the DA around the airport (which has seen a couple large mansions get built in the past 10-15 years, though I don't think 2 high income earners can skew a DA income by that much.)
 
 Anyway, let's probit:
 
@@ -472,6 +487,8 @@ summary(myprobit)
 
 So basically, right now it looks like the only significant variable is whether income grew faster than average: Areas that saw less income growth were ones where the primary school closed.
 
+Since we don't have causality in this, only correlation, I guess we can't right now infer much... can we say that the downtown areas that saw school closures were less likely to see gentrification influx?
+
 Discussion with AP on 7 Oct 2019 yielded that I should include POP0TO142006 and AVGAFTERTAXINCHH2006. Let's do that now:
 
 ```{r}
@@ -483,6 +500,20 @@ AP will like this! deltaincome is still a significant negative predictor of scho
 
 So we can conclude from AVGAFTERTAXINCHH2006 that DAs with lower income in 2006 were much more likely to see their school close; however, areas that saw high positive income gains were also much less likely to see their school close.
 
+What about age 0 to 14 proportion of population change, instead?
+
+```{r}
+#poop, I forgot to subset out POP2006 NAs!
+DAsj <- subset(DAsj, !is.na(POP2006))
+```
+
+
+```{r}
+DAsj$deltaperckids <- DAsj$deltapop0to14 / DAsj$POP2006
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltaperckids + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+summary(myprobit)
+```
+
 In case we think that higher income DAs see higher delta income from 2006 to 2016:
 
 ```{r}
@@ -490,7 +521,7 @@ a <- lm(deltaincome ~ log(AVGAFTERTAXINCHH2006), data=DAsj)
 summary(a)
 ```
 
-No, it's not true at all. Slight negative coefficient, but actually nearly 0 R-squared.
+No, it's not true at all. Slight negative coefficient with a good p-value, but actually nearly 0 R-squared, so pretty much no explanatory value.
 
 ##Gentrification?
 
@@ -503,7 +534,7 @@ DAsj$gent <- as.numeric(DAsj$deltaincoveravg==1) * as.numeric(DAsj$deltapop0to14
 Let's add that to our full probit:
 
 ```{r}
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + gent, family = binomial(link = "probit"), data = DAsj)
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltaperckids + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + gent, family = binomial(link = "probit"), data = DAsj)
 
 ## model summary
 summary(myprobit)
@@ -511,7 +542,7 @@ summary(myprobit)
 
 Hm.
 
-This looks to me like neighbourhoods that saw their old school close from 2006 to 2016 gentrified more (p=0.13, I know that's not great but it is the vaguest of proof).
+This looks to me like neighbourhoods that saw their old school close from 2006 to 2016 gentrified _more_ (p=0.17, I know that's not great but it is the vaguest of proof). 
 
 ---
 
@@ -557,13 +588,35 @@ tm_shape(DAsj2) + tm_polygons("Isschoolclosed2", palette = pal1)
 And nopw we can do another probit, this time for Catholic school closures, on the variables suggested by AP:
 
 ```{r}
-myprobit2 <- glm(Isschoolclosed2 ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + gent, family = binomial(link = "probit"), data = DAsj2)
+myprobit2 <- glm(Isschoolclosed2 ~ deltaincome + deltapop0to14 + deltaperckids + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + gent, family = binomial(link = "probit"), data = DAsj2)
 
 ## model summary
 summary(myprobit2)
 ```
 
-Compare the Catholic result to the public board result. In the Catholic case, the p value for deltaincome is not significant, but after tax household income 2006 is still a negative predictor of school closure. Also, there is still no correlation between deltapop0to14 and school closure.
+Compare the Catholic result to the public board result. In the Catholic case, the p value for deltaincome is not significant, but after tax household income 2006 is still a negative predictor of school closure. Also, areas with a decrease in children as percent of population saw schools more likely to close.
+
+## EXTRA: density plots?
+
+Let's see if I can do some density plots to show differences:
+
+```{r}
+# Change line color by sex
+a <- ggplot(DAsj, aes(x = AVGAFTERTAXINCHH2006))
+a + geom_density(aes(color = as.factor(Isschoolclosed))) +
+  geom_vline(aes(xintercept = mean(deltaincome)), 
+             linetype = "dashed", size = 0.6)
+```
+
+
+```{r}
+a <- ggplot(DAsj2, aes(x = AVGAFTERTAXINCHH2006))
+a + geom_density(aes(color = as.factor(Isschoolclosed2))) +
+  geom_vline(aes(xintercept = mean(deltaincome)), 
+             linetype = "dashed", size = 0.6)
+```
+
+
 
 
 
