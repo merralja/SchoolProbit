@@ -407,7 +407,7 @@ So now, we have a set of 2006 Dissemination Area polygons for Hamilton, and we c
 
 So let's start by loading Join_Output, the ArcGIS DA geometry file that includes flags for school closure. Then we coerce DAgeometry DAUID into integer, which apparently has to be done the long way round cos it's a factor; then we delete extraneous columns; then we join into the 2006 census file.
 
-```{Delete extraneous columns:}
+```{r Delete extraneous columns:}
 library(sf)
 ```
 
@@ -597,6 +597,34 @@ summary(myprobit2)
 Compare the Catholic result to the public board result. In the Catholic case, the p value for deltaincome is not significant, but after tax household income 2006 is still a negative predictor of school closure. Also, areas with a decrease in children as percent of population saw schools more likely to close.
 
 ## EXTRA: density plots?
+
+```{r}
+DAsj2
+```
+
+I would like to write this file, so we can use it in AP's regression. Apparently to save this I need to crunch down column names to ten letters or less.
+
+```{r}
+DAsj2 <- DAsj2 %>% 
+  rename(
+    POP06 = POP2006,
+    POPKIDS06 = POP0TO142006,
+    PCLOWINCO6 = PERCLOWINC0TO52006,
+    AVGINC06 = AVGAFTERTAXINCHH2006,
+    POP16 = POP2016,
+    POPKIDS16 = POP0TO142016,
+    PCLOWINC16 = PERCLOWINC0TO52016,
+    AVGINC16 = AVGAFTERTAXINCHH2016,
+    DELTAINC = deltaincome,
+    DINCOVERAV = deltaincoveravg,
+    DELTAKIDS = deltapop0to14,
+    SCLCLOSED = Isschoolclosed,
+    DELTAPKIDS = deltaperckids,
+    CATHCLOSED = Isschoolclosed2
+    )
+st_write(DAsj2, "C:/Users/me/Documents/GitHub/DAsj2.shp", delete_layer=TRUE)
+```
+
 
 Let's see if I can do some density plots to show differences:
 
