@@ -1,5 +1,0 @@
-"0","```r
-nrow(filter(houses.sf, DELTAIN >= 4))
-```"
-"1","[1] 3
-"

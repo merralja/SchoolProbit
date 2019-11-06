@@ -1,5 +1,0 @@
-"0","```r
-houses.sf$nearest <- st_nearest_feature(houses.sf, schools)
-houses.sf <- houses.sf %>%
-  mutate(schooldist = st_distance(houses.sf, schools[houses.sf$nearest,], by_element = TRUE))
-```"

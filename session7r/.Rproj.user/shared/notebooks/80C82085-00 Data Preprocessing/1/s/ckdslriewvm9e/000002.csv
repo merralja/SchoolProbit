@@ -1,3 +1,0 @@
-"0","```r
-ggplot(data = houses.sf, aes(x = DELTAIN)) + geom_histogram()
-```"

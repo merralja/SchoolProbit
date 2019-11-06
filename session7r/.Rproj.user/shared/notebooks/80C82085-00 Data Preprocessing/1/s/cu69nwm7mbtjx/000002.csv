@@ -1,5 +1,0 @@
-"0","```r
-ggplot(data = junk1) + 
-  geom_sf(data = hamilton_da.sf, aes(fill = NULL)) +
-  geom_sf() 
-```"

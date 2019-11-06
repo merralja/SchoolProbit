@@ -1,5 +1,0 @@
-"0","```r
-ggplot(data = df_2016.sf) + 
-    geom_sf(data = hamilton_da.sf, aes(fill = NULL)) +
-   geom_sf(aes(color = Close.Price))
-```"

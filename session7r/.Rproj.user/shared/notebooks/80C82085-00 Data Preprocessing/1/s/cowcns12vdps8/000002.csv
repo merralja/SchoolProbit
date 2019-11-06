@@ -1,6 +1,0 @@
-"0","```r
-summary(houses.sf$List.Price)
-```"
-"1","   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-      1  289900  379900  421224  499000 5900000 
-"

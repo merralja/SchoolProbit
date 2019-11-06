@@ -1,9 +1,0 @@
-"0","```r
-houses.sf <- houses.sf %>%
-  mutate(Transaction.Type = factor(Transaction.Type))
-
-summary(houses.sf$Transaction.Type)
-```"
-"1","RENTLEASE      SALE      SUBL 
-      796      8569         4 
-"

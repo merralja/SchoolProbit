@@ -1,5 +1,0 @@
-"0","```r
-df_2016.sf <- st_crop(df_2016.sf, xmin = 560921, ymin = 4767177, xmax = 621021, ymax = 4814330)
-```"
-"1","attribute variables are assumed to be spatially constant throughout all geometries
-"

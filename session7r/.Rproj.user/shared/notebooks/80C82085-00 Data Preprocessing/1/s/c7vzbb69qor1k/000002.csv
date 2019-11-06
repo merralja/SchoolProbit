@@ -1,3 +1,0 @@
-"0","```r
-ggplot(data = houses.sf, aes(x = log(Close.Price))) + geom_histogram()
-```"

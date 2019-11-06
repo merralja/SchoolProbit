@@ -1,3 +1,0 @@
-"0","```r
-plot(df_2016.sf[,\"Close.Price\"])
-```"

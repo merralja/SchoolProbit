@@ -1,3 +1,0 @@
-"0","```r
-houses.sf <- houses.sf %>% filter(Property.Type == \"RES\")
-```"

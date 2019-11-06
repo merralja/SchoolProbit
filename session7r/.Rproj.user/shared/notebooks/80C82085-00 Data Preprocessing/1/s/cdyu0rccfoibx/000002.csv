@@ -1,7 +1,0 @@
-"0","```r
-st_crs(df_2016.sf)
-```"
-"1","Coordinate Reference System:
-  EPSG: 26917 
-  proj4string: \"+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs\"
-"

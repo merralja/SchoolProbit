@@ -1,4 +1,0 @@
-"0","```r
-houses.sf <- houses.sf %>%
-  mutate(log_Close.Price = log(Close.Price))
-```"

@@ -1,7 +1,0 @@
-"0","```r
-ggplot(data = data.frame(Observed = mod1$fitted.values + mod1$residuals,
-                         Predicted = mod1$fitted.values),
-       aes(x = Observed, y = Predicted)) +
-  geom_point(alpha = 0.5) +
-  geom_abline(intercept = 0, slope = 1, color = \"blue\")
-```"

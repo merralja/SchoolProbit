@@ -1,7 +1,0 @@
-"0","```r
-df <- read.xlsx(xlsxFile = \"E:/PAEZ/RAHBdata/RAHB_AllData_HamBurlOak.xlsx\", 
-          sheet = 1, 
-          colNames = TRUE, 
-          detectDates = TRUE, 
-          cols = colIndex)
-```"

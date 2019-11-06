@@ -1,8 +1,0 @@
-"1","Reading layer `HWDSB_2015_16_SCHOOLPOINTS' from data source `C:\Users\me\Documents\GitHub\Schools-and-Property-Values\HWDSB2016schoolpoints' using driver `ESRI Shapefile'
-Simple feature collection with 105 features and 30 fields
-geometry type:  POINT
-dimension:      XY
-bbox:           xmin: 564816.4 ymin: 4775491 xmax: 608799.1 ymax: 4806248
-epsg (SRID):    26917
-proj4string:    +proj=utm +zone=17 +datum=NAD83 +units=m +no_defs
-"

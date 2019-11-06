@@ -1,9 +1,0 @@
-"0","```r
-houses.sf <- houses.sf %>%
-  mutate(Property.Sub.Type = factor(Property.Sub.Type))
-
-summary(houses.sf$Property.Sub.Type)
-```"
-"1"," CND  FRH 
-1201 6989 
-"

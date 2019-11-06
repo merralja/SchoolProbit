@@ -1,6 +1,0 @@
-"0","```r
-ggplot(data = data.frame(Observed = mod0$fitted.values + mod0$residuals,
-                         Predicted = mod0$fitted.values),
-       aes(x = Observed, y = Predicted)) +
-  geom_point()
-```"
