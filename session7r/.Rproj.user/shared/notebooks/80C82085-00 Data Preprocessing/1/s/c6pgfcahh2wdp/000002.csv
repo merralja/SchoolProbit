@@ -1,0 +1,6 @@
+"0","```r
+summary(houses.sf$Original.List.Price)
+```"
+"1","    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+       1   289900   380000   434225   499900 42990000 
+"

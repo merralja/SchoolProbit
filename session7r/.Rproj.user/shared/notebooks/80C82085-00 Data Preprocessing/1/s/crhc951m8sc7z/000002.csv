@@ -1,0 +1,7 @@
+"0","```r
+st_crs(hamilton_da.sf)
+```"
+"1","Coordinate Reference System:
+  EPSG: 26917 
+  proj4string: \"+proj=utm +zone=17 +datum=NAD83 +units=m +no_defs\"
+"

@@ -1,0 +1,5 @@
+"0","```r
+st_crs(hamilton_da.sf) <- \"+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs\"
+```"
+"1","st_crs<- : replacing crs does not reproject data; use st_transform for that
+"

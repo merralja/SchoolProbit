@@ -1,0 +1,5 @@
+"0","```r
+houses.sf <- st_intersection(df_2016.sf, hamilton_da.sf)
+```"
+"1","attribute variables are assumed to be spatially constant throughout all geometries
+"

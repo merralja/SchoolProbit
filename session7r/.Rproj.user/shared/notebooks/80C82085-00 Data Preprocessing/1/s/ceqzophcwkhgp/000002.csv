@@ -1,0 +1,5 @@
+"0","```r
+ggplot(data = houses.sf) + 
+  geom_sf(data = hamilton_da.sf, aes(fill = NULL)) +
+  geom_sf(aes(color = Close.Price, size = Close.Price), alpha = 0.2) 
+```"

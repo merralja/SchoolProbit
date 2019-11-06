@@ -1,0 +1,5 @@
+"0","```r
+junk1 <- st_intersection(schools, hamilton_da.sf)
+```"
+"1","attribute variables are assumed to be spatially constant throughout all geometries
+"

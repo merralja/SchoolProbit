@@ -1,0 +1,4 @@
+"0","```r
+hamilton_da.sf$area <- st_area(hamilton_da.sf)
+hamilton_da.sf$popdens <- hamilton_da.sf$POP16 / hamilton_da.sf$area
+```"

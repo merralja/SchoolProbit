@@ -1,0 +1,5 @@
+"0","```r
+df_2016.sf <- df %>% filter(YEAR == 2016, !is.na(Latitude), !is.na(Longitude)) %>% 
+  st_as_sf(coords = c(\"Longitude\", \"Latitude\"),
+           crs = 4326)
+```"

@@ -1,0 +1,5 @@
+"0","```r
+nrow(filter(houses.sf, List.Price == 1))
+```"
+"1","[1] 2
+"

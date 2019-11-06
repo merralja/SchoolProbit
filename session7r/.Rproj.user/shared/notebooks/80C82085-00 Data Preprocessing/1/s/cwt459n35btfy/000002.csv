@@ -1,0 +1,5 @@
+"0","```r
+ggplot(data = houses.sf, aes(x = log(List.Price), y = log(Close.Price))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = \"blue\")
+```"

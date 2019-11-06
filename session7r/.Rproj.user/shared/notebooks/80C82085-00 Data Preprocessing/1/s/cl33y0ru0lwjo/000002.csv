@@ -1,0 +1,6 @@
+"0","```r
+summary(houses.sf$Close.Price)
+```"
+"1","   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0  292500  383000  420570  497000 6000000 
+"

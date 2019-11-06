@@ -1,0 +1,9 @@
+"0","```r
+houses.sf <- houses.sf %>%
+  mutate(Fronting.On = factor(Fronting.On))
+
+summary(df_2016.sf$Fronting.On)
+```"
+"1","   Length     Class      Mode 
+    14029 character character 
+"
