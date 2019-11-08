@@ -1,0 +1,101 @@
+
+R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
+Copyright (C) 2019 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "session7r"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> options(pager = "console")
+> base::assign(".ExTimings", "session7r-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
+> library('session7r')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("publicschools2016primary")
+> ### * publicschools2016primary
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: publicschools2016primary
+> ### Title: publicschools2016primary: a 2015-2016 primary schools sf point
+> ###   file for Hamilton, Ontario.
+> ### Aliases: publicschools2016primary
+> ### Keywords: Hamilton datasets, schools,
+> 
+> ### ** Examples
+> 
+>  data(publicschools2016primary)
+Warning in data(publicschools2016primary) :
+  data set 'publicschools2016primary' not found
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("publicschools2016primary", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("publicschools2016secondary")
+> ### * publicschools2016secondary
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: publicschools2016secondary
+> ### Title: publicschools2016secondary: a 2015-2016 secondary schools sf
+> ###   point file for Hamilton, Ontario.
+> ### Aliases: publicschools2016secondary
+> ### Keywords: Hamilton datasets, schools,
+> 
+> ### ** Examples
+> 
+>  data(publicschools2016secondary)
+Warning in data(publicschools2016secondary) :
+  data set 'publicschools2016secondary' not found
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("publicschools2016secondary", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("twotothepowerof")
+> ### * twotothepowerof
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: twotothepowerof
+> ### Title: twotothepowerof
+> ### Aliases: twotothepowerof twotothepowerof-package
+> 
+> ### ** Examples
+> 
+> twotothepowerof(3)
+Error in twotothepowerof(3) : could not find function "twotothepowerof"
+Execution halted

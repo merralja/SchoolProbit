@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573232372330.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "547990624",
+    "id" : "79AA0870",
+    "lastKnownWriteTime" : 1573232869,
+    "last_content_update" : 1573232869946,
+    "path" : "~/GitHub/SchoolProbit/sess7r/R/twotothepowerof.R",
+    "project_path" : "R/twotothepowerof.R",
+    "properties" : {
+        "cursorPosition" : "6,3",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573232042805.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1313814841",
+    "id" : "5E579943",
+    "lastKnownWriteTime" : 1573232243,
+    "last_content_update" : 1573232243512,
+    "path" : "~/GitHub/SchoolProbit/sess7r/R/sess7r.R",
+    "project_path" : "R/sess7r.R",
+    "properties" : {
+        "cursorPosition" : "9,15",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

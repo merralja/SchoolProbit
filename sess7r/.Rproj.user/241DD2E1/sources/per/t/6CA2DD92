@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573233953265.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1134694749",
+    "id" : "6CA2DD92",
+    "lastKnownWriteTime" : 1573234395,
+    "last_content_update" : 1573234395590,
+    "path" : "~/GitHub/SchoolProbit/sess7r/R/publicschools2016primary.R",
+    "project_path" : "R/publicschools2016primary.R",
+    "properties" : {
+        "cursorPosition" : "21,39",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

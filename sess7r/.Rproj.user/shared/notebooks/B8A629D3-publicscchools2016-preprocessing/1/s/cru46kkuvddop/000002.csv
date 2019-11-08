@@ -1,0 +1,33 @@
+"0","```r
+publicschools2016secondary
+```"
+"1","Simple feature collection with 13 features and 8 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 580862.4 ymin: 4781929 xmax: 604727.3 ymax: 4798612
+epsg (SRID):    26917
+proj4string:    +proj=utm +zone=17 +datum=NAD83 +units=m +no_defs
+First 10 features:
+                 SCHNAME         X        Y                   Address         City PostalCode
+1          Ancaster High -80.00444 43.21569 374 Jerseyville Road West     Ancaster    L9G 3K8
+2                  Delta -79.81424 43.24057     1284 Main Street East     Hamilton    L8K 1B2
+3               Glendale -79.77934 43.22576         145 Rainbow Drive     Hamilton    L8K 4G1
+4          Dundas Valley -79.97654 43.25791       310 Governor's Road       Dundas    L9H 5P8
+5           Orchard Park -79.71058 43.21760           200 DeWitt Road Stoney Creek    L8E 4M5
+6              Saltfleet -79.77860 43.18361    108 Highland Road West Stoney Creek    L8J 2T2
+7               Sherwood -79.82313 43.22763            25 High Street     Hamilton    L8T 3Z4
+8       Sir Allan MacNab -79.92252 43.23163        145 Magnolia Drive     Hamilton    L9C 5P4
+9  Sir John A. Macdonald -79.87333 43.26137        130 York Boulevard     Hamilton    L8R 1Y5
+10 Sir Winston Churchill -79.79496 43.23761     1715 Main Street East     Hamilton    L8H 1E3
+   Year_Built SchoolID                 geometry
+1        1959      506 POINT (580862.4 4785249)
+2        1924      524 POINT (596271.6 4788213)
+3        1960      532 POINT (599129.6 4786609)
+4        1968      546 POINT (583071.3 4789964)
+5        1965      552 POINT (604727.3 4785787)
+6        1996      555 POINT (599257.8 4781929)
+7        1967      564 POINT (595570.2 4786765)
+8        1969      568 POINT (587493.5 4787101)
+9        1969      570 POINT (591443.3 4790456)
+10       1967      572 POINT (597842.1 4787907)
+"

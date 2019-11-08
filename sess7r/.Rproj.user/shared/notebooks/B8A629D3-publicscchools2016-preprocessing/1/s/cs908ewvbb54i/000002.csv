@@ -1,0 +1,33 @@
+"0","```r
+publicschools2016primary
+```"
+"1","Simple feature collection with 80 features and 8 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 564816.4 ymin: 4775491 xmax: 608799.1 ymax: 4806248
+epsg (SRID):    26917
+proj4string:    +proj=utm +zone=17 +datum=NAD83 +units=m +no_defs
+First 10 features:
+               SCHNAME         X        Y                             Address         City PostalCode
+1    Adelaide Hoodless -79.83714 43.24592                 71 Maplewood Avenue     Hamilton    L8M 1W7
+2            Balaclava -79.99620 43.40471 280 10th Concession E and Centre Rd     Freelton    L0R 1K0
+3             Bennetto -79.86198 43.26795               47 Simcoe Street East     Hamilton    L8L 3N2
+4          Billy Green -79.79549 43.20136                 105 Paramount Drive     Hamilton    L8J 1W2
+5    Cecil B. Stirling -79.84251 43.20322            340 Queen Victoria Drive     Hamilton    L8W 1T9
+6              Chedoke -79.90625 43.23876                500 Bendamere Avenue     Hamilton    L9C 1R3
+7    Collegiate Avenue -79.74911 43.22095                49 Collegiate Avenue Stoney Creek    L8G 3L5
+8             Eastdale -79.73452 43.22891                    275 Lincoln Road Stoney Creek    L8E 1Z4
+9   Flamborough Centre -79.93220 43.35865                     922 Centre Road     Hamilton    L8N 2Z7
+10 George L. Armstrong -79.85618 43.24102               460 Concession Street     Hamilton    L9A 1C3
+   Year_Built SchoolID                 geometry
+1        1912        6 POINT (594404.5 4788781)
+2        1989       16 POINT (581279.1 4806248)
+3        1966       78 POINT (592354.7 4791200)
+4        1981       34 POINT (597856.8 4783881)
+5        1977       72 POINT (594034.2 4784033)
+6        1957       90   POINT (588804 4787910)
+7        1954       94 POINT (601592.7 4786111)
+8        1965      113 POINT (602763.7 4787013)
+9        1953      130 POINT (586526.9 4801197)
+10       1930      138   POINT (592866 4788215)
+"

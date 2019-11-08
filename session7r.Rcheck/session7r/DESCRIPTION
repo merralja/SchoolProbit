@@ -1,0 +1,16 @@
+Package: session7r
+Type: Package
+Title: Session 7 Package
+Version: 0.1.0
+Author: John Merrall
+Maintainer: John Merrall <merralja@mcmaster.ca>
+Description: It has data and it does a thing.
+    Use four spaces when indenting paragraphs within the Description.
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+NeedsCompilation: no
+Packaged: 2019-11-08 16:44:43 UTC; me
+Depends: R (>= 3.5.0)
+Built: R 3.6.0; ; 2019-11-08 16:44:46 UTC; windows
