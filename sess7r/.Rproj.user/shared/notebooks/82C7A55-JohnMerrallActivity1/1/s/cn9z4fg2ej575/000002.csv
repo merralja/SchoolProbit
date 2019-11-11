@@ -1,0 +1,1 @@
+"0","DAsj$Isschoolclosed <- as.numeric(DAsj$Max_CLOSED==1 | DAsj$Max_CLOSED==2)"

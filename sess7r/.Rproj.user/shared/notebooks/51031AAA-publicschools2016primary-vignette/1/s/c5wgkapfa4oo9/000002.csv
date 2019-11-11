@@ -1,0 +1,2 @@
+"0","b <- ggplot(publicschools2016primary, aes(x = School_Age))"
+"0","b + geom_histogram()"

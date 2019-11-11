@@ -1,0 +1,1 @@
+"0","DAsj$gent <- as.numeric(DAsj$deltaincoveravg==1) * as.numeric(DAsj$deltapop0to14<=0)"

@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573511159857.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2356858184",
+    "id" : "F27B8E4D",
+    "lastKnownWriteTime" : 1573511203,
+    "last_content_update" : 1573511203271,
+    "path" : "~/GitHub/SchoolProbit/sess7r/vignettes/publicschools2016primary-vignette.Rmd",
+    "project_path" : "vignettes/publicschools2016primary-vignette.Rmd",
+    "properties" : {
+        "cursorPosition" : "49,61",
+        "last_setup_crc32" : "",
+        "scrollLine" : "40",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

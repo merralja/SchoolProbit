@@ -1,0 +1,4 @@
+"0","tmap_mode(""view"")"
+"0","#qtm(ridings, fill = ""Isschoolclosed"")"
+"0","pal1 <- c(""green"", ""red"")"
+"0","tm_shape(DAsj2) + tm_polygons(""Isschoolclosed2"", palette = pal1)"

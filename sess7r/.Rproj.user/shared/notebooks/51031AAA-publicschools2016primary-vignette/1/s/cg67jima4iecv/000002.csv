@@ -1,0 +1,2 @@
+"0","a <- ggplot(publicschools2016primary, aes(x = School_Age))"
+"0","a + geom_density(aes(color = as.factor(City != ""Hamilton""))) + theme(legend.position=""bottom"")"

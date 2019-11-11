@@ -1,0 +1,5 @@
+"0","# calculated delta income, and the flag"
+"0","finaldf$deltaincome <- finaldf$AVGAFTERTAXINCHH2016/finaldf$AVGAFTERTAXINCHH2006"
+"0","finaldf$deltaincoveravg <- as.integer(finaldf$deltaincome > finaldf$deltaincome[finaldf$DAUID==3525])"
+"0","# calculate delta pop 0 to 14"
+"0","finaldf$deltapop0to14 <- finaldf$POP0TO142016 - finaldf$POP0TO142006"
