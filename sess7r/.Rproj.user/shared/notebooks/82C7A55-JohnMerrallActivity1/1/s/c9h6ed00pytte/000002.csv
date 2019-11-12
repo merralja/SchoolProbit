@@ -1,3 +1,0 @@
-"0","tmap_mode(""view"")"
-"0","pal1 <- c(""green"", ""red"")"
-"0","tm_shape(DAsj) + tm_polygons(""Isschoolclosed"", palette = pal1)"

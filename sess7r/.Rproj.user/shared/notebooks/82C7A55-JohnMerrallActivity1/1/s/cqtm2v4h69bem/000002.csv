@@ -1,4 +1,0 @@
-"0","tmap_mode(""view"")"
-"0","tm_shape(DAsj) +"
-"0","tm_fill(c(""deltapop0to14"", ""deltaincome""),title=c(""Delta 0 to 14 pop"", ""delta income""), n=c(6,10), style=c(""quantile"", ""jenks""), palette=""YlOrBr"") +  "
-"0","  tm_facets(sync = TRUE, ncol = 2)"

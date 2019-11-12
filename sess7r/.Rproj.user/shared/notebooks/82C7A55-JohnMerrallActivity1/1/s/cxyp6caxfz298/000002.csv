@@ -1,2 +1,0 @@
-"0","#poop, I forgot to subset out POP2006 NAs!"
-"0","DAsj <- subset(DAsj, !is.na(POP2006))"

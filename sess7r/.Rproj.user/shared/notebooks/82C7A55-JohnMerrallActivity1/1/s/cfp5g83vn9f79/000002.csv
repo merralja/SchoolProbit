@@ -1,5 +1,0 @@
-"0","# now we strip out all 2016 NAs"
-"0","#"
-"0","finaldf <- subset(finaldf, !is.na(AVGAFTERTAXINCHH2016))"
-"0","finaldf <- subset(finaldf, !is.na(PERCLOWINC0TO52016))"
-"0","finaldf <- subset(finaldf, AVGAFTERTAXINCHH2016>0)"

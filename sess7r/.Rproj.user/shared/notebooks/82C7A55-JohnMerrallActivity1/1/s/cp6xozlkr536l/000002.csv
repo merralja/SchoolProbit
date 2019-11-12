@@ -1,5 +1,0 @@
-"0","# Change line color by sex"
-"0","a <- ggplot(DAsj, aes(x = AVGAFTERTAXINCHH2006))"
-"0","a + geom_density(aes(color = as.factor(Isschoolclosed))) +"
-"0","  geom_vline(aes(xintercept = mean(deltaincome)), "
-"0","             linetype = ""dashed"", size = 0.6)"

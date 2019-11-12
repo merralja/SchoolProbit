@@ -1,4 +1,0 @@
-"0","tmap_mode(""view"")"
-"2","tmap mode set to interactive viewing
-"
-"0","tm_shape(publicschools2016primary) + tm_dots(""School_Age"")"
