@@ -1,33 +1,66 @@
 ---
-title: "School Probit"
-author: "John Merrall"
-date: "04/10/2019"
-output:
-  html_document: default
-  pdf_document: default
+title: Probit Analysis of School Closures in Hamilton Ontario
+author:
+  - name: John Merrall
+    email: merralja@mcmaster.ca
+    affiliation: School of Geography and Earth Sciences, McMaster University
+    footnote: Corresponding Author
+address:
+  - code: School of Geography and Earth Sciences, McMaster University
+    address: General Sciences Rm. 206, McMaster University, 1280 Main Street West, Hamilton, Ontario L8S 4K1
+abstract: |
+  This is the abstract.
+
+  It consists of two paragraphs.
+
+journal: "Journal for the Society for Putting Things on Top of Other Things"
+date: "`r Sys.Date()`"
+bibliography: mybibfile.bib
+#linenumbers: true
+#numbersections: true
+csl: elsevier-harvard.csl
+output: rticles::elsevier_article
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+_Text based on elsarticle sample manuscript, see [http://www.elsevier.com/author-schemas/latex-instructions#elsarticle](http://www.elsevier.com/author-schemas/latex-instructions#elsarticle)_
 
 
-```{r}
+```{r load-packages, include = FALSE}
 library(dplyr)
+library(ggplot2)
+library(kableExtra)
+library(rticles)
+library(sf)
+library(tidyverse)
+library(tmap)
 ```
 
 
-# A school probit
+Introduction
+============
 
-I want to do a probit on whether or not DAs that saw an increase or decrease in income or youth population, between 2006 and 2016, were more or less likely to lose their local public primary school to amalgamation.
+School closures in the city of Hamilton became a contentious issue in 2002, when the Harris government appointed Jim Murray as special supervisor to oversee a rationalization of the Hamilton-Wentworth District School Board (HWDSB) in the face of trustee opposition to closure of under-utilized schools (Honey 2002; Prokaska 2012). The following years saw a wave of public board school closures and replacements in Hamilton, aiming to reduce per-pupil education costs in the face of urban demographic change, and to access new provincial construction funding. Resistance to the consolidation process eventually relented, and this accommodation review system has since become institutionalized at the HWDSB; the Hamilton Catholic board (HWCDSB), facing similar overcapacity issues, has followed suit.
 
-# 1. Data preprocessing
+Given the wave of school reorganizations that occurred over the past twenty years, it makes sense to look at whether these closures had a social equity effect: neighbourhoods certainly didn't suddenly find themselves without any school at all, but distance to schools would have increased in areas where school closures occurred. Did this increase in walking distance disproportionately affect the poor?
 
-Let's start by loading 2006 and 2016 census data, as downloaded from CHASS. Then we will cut out all DAs that were NA for data in 2006.
+This paper will examine the likelihood of a HWDSB or HWCDSB school being closed between the years of 2006 and 2016, dependent on the income and deprivation characteristics and trends of each census dissemination area over that same period of time. 
 
-```{r load-census, echo = FALSE, message = FALSE, warning=FALSE}
+
+Data
+====
+
+## Census Data
+
+```{r load-census, include = FALSE}
+#
+# here we are loading 2006 and 2016 DA-level census data which has been downloaded from CHASS.
+#
 CENSUS2006DATA <- read.csv(file="CENSUS2006DATA.csv", header=TRUE, sep=",")
 CENSUS2016DATA <- read.csv(file="CENSUS2016DATA.csv", header=TRUE, sep=",")
+#
+# the problem with using this data is that we will have a fair number of NAs.
+# we subset out the NA data here:
+#
 CENSUS2006DATA <- subset(CENSUS2006DATA, !is.na(AVGAFTERTAXINC))
 CENSUS2006DATA <- subset(CENSUS2006DATA, !is.na(PERCLOWINC0TO5))
 #
@@ -36,17 +69,18 @@ CENSUS2006DATA <- subset(CENSUS2006DATA, !is.na(PERCLOWINC0TO5))
 # So they have to go as well.
 #
 CENSUS2006DATA <- subset(CENSUS2006DATA, AVGAFTERTAXINC>0)
+#
+# and trim excess columns
+#
+CENSUS2006DATA <- CENSUS2006DATA %>% select(DAUID, POP2006, POP0TO14ADD, PERCLOWINC0TO5, AVGAFTERTAXINC)
 ```
 
+First, a compact set of Hamilton dissemination area level census data and GIS dissemination area shapefiles for census years 2006 and 2016 were downloaded from CHASS; areas with NA or zero values for Average After-Tax Income, and NA values for Percent Children 0-5 Low Income, were dropped from the dataset. Since this paper's analysis is performed at the 2006 dissemination area level of support, 2016 data was appended to the 2006 data frame; the 23 dissemination areas of 2006 which were split by the time of the 2016 census were identified in R, verified manually in ArcGIS, and 2016 data was then manipulated to append to the data frames for those subsequently-split 2006 DAs. Then, the 2006 and 2016 data was used to calculate each DA's percent change in average household after-tax income, and absolute change in population ages 0 to 14. 
 
-Next, we need to trim out some excess columns in the 2006 file, and rename some columns to make keeping track of variables easier:
-
-```{r trim-columns, echo = FALSE, message = FALSE, warning=FALSE}
-head((CENSUS2006DATA <- CENSUS2006DATA %>%
-select(DAUID, POP2006, POP0TO14ADD, PERCLOWINC0TO5, AVGAFTERTAXINC)))
-# note I had already calculated pop0to14 outside of R in libreoffice before I started this work
-```
-```{r rename, echo = FALSE, message = FALSE, warning=FALSE}
+```{r data-preparation, include=FALSE}
+#
+# renaming files and columns to make following the code easier:
+#
 CE06 <- CENSUS2006DATA %>% 
   rename(
     POP0TO142006 = POP0TO14ADD,
@@ -59,23 +93,13 @@ CE16 <- CENSUS2016DATA %>%
     PERCLOWINC0TO52016 = PERCLOWINC0TO5,
     AVGAFTERTAXINCHH2016 = AVGAFTERTAXINCOME
   )
-```
-
-##Dealing with split DAs
-
-We next need to check which 2006 DAs disappeared by 2016, according to our two census files. These split DAs need to be rebuilt using 2016 data so that we can calculate deltas for them.
-
-```{r find-split-das, echo = FALSE, message = FALSE, warning=FALSE}
-(in2006not2016 <- anti_join(CE06,CE16))
-```
-
-Thankfully, this calculation yields only 23 DAs of 2006 that were split into smaller DAs in 2011 and 2016. I have manually generated a list of split DAs, confirmed by inspection in ArcGIS, and it agrees with the above generated list.
-
-So let's fake the 2016 pop etc. data for those 23 split 2006 DAs by hand. 
-
-I could just have easily done the math in excel before loading the files in R, but at least you get to track all my math here.
-
-```{r combine-das, echo = FALSE, message = FALSE, warning=FALSE}
+#
+# find split DAs - this code can be run and the data frame inspected if you wish
+#
+in2006not2016 <- anti_join(CE06,CE16)
+#
+# this next bit of code is a doozy
+#
 # the default for "merge" will do a join while dropping 2006 DAs found in in2006not2016
 # so we have to keep those by saying all.x = "TRUE"
 # it also has no problem bringing "NA" data from 2016
@@ -358,299 +382,189 @@ finaldf$POP0TO142016[finaldf$DAUID==35250927] <- (CE16$POP0TO142016[CE16$DAUID==
 finaldf$AVGAFTERTAXINCHH2016[finaldf$DAUID==35250927] <-     (CE16$AVGAFTERTAXINCHH2016[CE16$DAUID==35250978])
 #
 finaldf$PERCLOWINC0TO52016[finaldf$DAUID==35250927] <- (CE16$PERCLOWINC0TO5[CE16$DAUID==35250978])
-```
-
-Next we need to strip out all the other DAs that have an NA for 2016 data:
-
-```{r strip-2016-nas, echo = FALSE, message = FALSE, warning=FALSE}
-# now we strip out all 2016 NAs
+#
+# now we have to strip out all DAs with NA for 2016 data
 #
 finaldf <- subset(finaldf, !is.na(AVGAFTERTAXINCHH2016))
 finaldf <- subset(finaldf, !is.na(PERCLOWINC0TO52016))
 finaldf <- subset(finaldf, AVGAFTERTAXINCHH2016>0)
-```
-
-So now we can calculate delta household after-tax income for each DA, and delta pop 0-14 for each DA.
-
-I think right now that I want absolute delta pop 0 to 14 and not a proportion, because school enrolment is dependent on absolute numbers, not proportions. If not, I'll come back and change this code later.
-
-I also might want to split delta income categories into quintiles instead of simple above-below - or maybe even change my delta income from simple above-below to some other cutoff. We'll see.
-
-```{r calc-deltas, echo = FALSE, message = FALSE, warning=FALSE}
-# calculated delta income, and the flag
+#
+# calculate delta income, and the flag for delta income above or below city weighted average value
+#
 finaldf$deltaincome <- finaldf$AVGAFTERTAXINCHH2016/finaldf$AVGAFTERTAXINCHH2006
 finaldf$deltaincoveravg <- as.integer(finaldf$deltaincome > finaldf$deltaincome[finaldf$DAUID==3525])
+#
 # calculate delta pop 0 to 14
+#
 finaldf$deltapop0to14 <- finaldf$POP0TO142016 - finaldf$POP0TO142006
-```
-
-What's the final look like now?
-
-```{r}
-head(finaldf)
 ```
 
 ## Flagging DAs for school closure
 
-In ArcGIS, I did a spatial join between HWDSB elementary school catchments and DAs. The file created is called Join_Output (included in the ArcGIS subdirectory). Afterwards, I went through and manually verified the condition of each DA, changing the MAX-CLOSED column values to suit the following rubric:
+An incomplete set of shapefiles was received from the HWDSB for primary, middle school, and secondary school catchments from the years 2005 to 2019; this set of files was checked for veracity against the archive of the HWDSB website available at archive.org, as well as against news reports of school closures throughout that period, to produce a complete and checked set of HWDSB school catchment GIS files. For this paper, the 2005-6 primary-school catchment file was then modified to add a flag for all primary school catchments where the primary school was subsequently closed by 2016.
 
-0 - DA is completely outside closed catchment
-1 - DA is completely inside closed catchment
-2 - DA is about 70-90% inside closed catchment
-3 - DA is about 30-70% inside closed catchment
-4 - DA is maybe only 10-30% inside closed catchment
-9 - DA is outside closed catchment, but was labelled as inside because its border is sort of coincident with the closed catchment border and these 2 layers don't exactly tesselate.
-
-So now, we have a set of 2006 Dissemination Area polygons for Hamilton, and we can start looking at the data.
-
-# 2. Data exploration
-
-So let's start by loading Join_Output, the ArcGIS DA geometry file that includes flags for school closure. Then we coerce DAgeometry DAUID into integer, which apparently has to be done the long way round cos it's a factor; then we delete extraneous columns; then we join into the 2006 census file.
-
-```{r Delete extraneous columns:}
-library(sf)
-```
+A spatial join was then done in ArcGIS between the flagged 2006 HWDSB elementary school catchment file and the 2006 dissemination area shapefile, in order to add a flag to each 2006 DA to identify whether its public school had closed by 2016. The file created was then manually verified for the condition of each DA, and a flag was created for each DA to identify whether it was (mostly or completely) inside the catchment of a subsequently closed school. The resulting map, showing wwhich Hamilton DAs experienced a school closure between 2006 and 2016, is shown in Figure \ref{fig:DA-map}. (Note that the closure of Bell Stone school in south Glanbrook is not shown, in order to show more detail for the rest of the city.)
 
 
-```{r join-public-sf, echo = FALSE, message = FALSE, warning=FALSE}
+```{r load-geometry, include=FALSE}
+#
+# load the DA geometry file, join it to census file
+#
 DAgeometry <- st_read("./ArcGIS", layer = "Join_Output")
 DAgeometry <- mutate(DAgeometry, DAUID = as.integer(as.character(DAUID)))
 DAs <- DAgeometry %>%
 select(DAUID, Max_CLOSED, geometry)
 DAsj <- inner_join(DAs, finaldf)
-```
-
-Note that DAsj has one less row than finaldf, because finaldf contains the summary row for 3525, i.e. the data sum for all Hamilton.
-
-```{r}
-library(ggplot2)
-```
-
-##First probit
-
-Now, I guess, we can probit:
-
-pr(Isschoolclosed) ~ deltaincoveravg + deltapop0to14 + PERCLOWINC0TO52006
-
-So let's generate the dependent variable, first by taking any DA with Max_CLOSED = 1 or 2. This gives a 1 value to any DA whose boundary is 70% or more inside the 2006 catchment of a school that later closed.
-
-```{r gen-isclosed, echo = FALSE, message = FALSE, warning=FALSE}
 DAsj$Isschoolclosed <- as.numeric(DAsj$Max_CLOSED==1 | DAsj$Max_CLOSED==2)
 ```
 
-So here is a zoomable map of the areas where schools have closed.
 
-```{r load-tmap, echo = FALSE, message = FALSE, warning=FALSE}
-library(tmap)
-```
-
-
-
-```{r}
+```{r print-DA-map, echo = FALSE, fig.cap="\\label{fig:DA-map} map of DAs with school closures"}}
 ham_bb <- st_bbox(DAsj %>% filter(DAUID %in% c("35250267", "35250942")))
 #new tmap with bbox
 tm_shape(DAsj, bbox = ham_bb) + 
-  tm_fill("Isschoolclosed") + 
-  tm_polygons()
+tm_borders() +
+   tm_layout(legend.title.size = 1,
+          legend.text.size = 0.6,
+          legend.position = c("top","right"),
+          legend.bg.alpha = 1) +       
+   tm_polygons(col = "Isschoolclosed", title="School Status",
+               style = "fixed",
+              breaks = c(0, 0.9, 2),
+              labels = c("Not Closed", "Closed")
+               )
 ```
 
 
-```{r zoomable-map, echo = FALSE, message = FALSE, warning=FALSE}
-tmap_mode("view")
-pal1 <- c("green", "red")
-tm_shape(DAsj) + tm_polygons("Isschoolclosed", palette = pal1)
-```
+Exploratory Analysis
+====================
 
-
-And so you can pretty much see the schools that were closed: Central Park in Dundas, Prince Philip in West Hamilton, Woodward and Roxborough Park in the east city; Linden Park and Eastmount Park on the Mountain; and Gibson, King George and Stinson downtown.
-
-Before we do the probit, I'd like to look at some variables:
-
-
-
-```{r zoomable-maps, echo = FALSE, message = FALSE, warning=FALSE}
-tmap_mode("view")
-tm_shape(DAsj) +
-tm_fill(c("deltapop0to14", "deltaincome"),title=c("Delta 0 to 14 pop", "delta income"), n=c(6,10), style=c("quantile", "jenks"), palette="YlOrBr") +  
-  tm_facets(sync = TRUE, ncol = 2)
-```
-
-```{r zoomable-income, echo = FALSE, message = FALSE, warning=FALSE}
-tmap_mode("view")
-tm_shape(DAsj) + tm_polygons(c("AVGAFTERTAXINCHH2006", "PERCLOWINC0TO52006"),n=c(6,6)) +
-  tm_facets(sync = TRUE, ncol = 2)
-```
-
-
-Later I want to do some area analysis on this. The maps are a bit uninformative: deltapop0to14 is skewed by a couple areas of higher settlement, and deltaincome is skewed by the DA around the airport (which has seen a couple large mansions get built in the past 10-15 years, though I don't think 2 high income earners can skew a DA income by that much.)
-
-Anyway, let's probit:
-
-```{r}
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
-
-## model summary
-summary(myprobit)
-
-```
-
-So basically, right now it looks like the only significant variable is whether income grew faster than average: Areas that saw less income growth were ones where the primary school closed.
-
-Since we don't have causality in this, only correlation, I guess we can't right now infer much... can we say that the downtown areas that saw school closures were less likely to see gentrification influx?
-
-Discussion with AP on 7 Oct 2019 yielded that I should include POP0TO142006 and AVGAFTERTAXINCHH2006. Let's do that now:
-
-```{r}
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
-summary(myprobit)
-```
-
-AP will like this! deltaincome is still a significant negative predictor of school closure, and average after-tax household income in 2006 is also a very significant negative predictor.
-
-So we can conclude from AVGAFTERTAXINCHH2006 that DAs with lower income in 2006 were much more likely to see their school close; however, areas that saw high positive income gains were also much less likely to see their school close.
-
-What about age 0 to 14 proportion of population change, instead?
-
-```{r}
-#poop, I forgot to subset out POP2006 NAs!
-DAsj <- subset(DAsj, !is.na(POP2006))
-```
 
 
 ```{r}
-DAsj$deltaperckids <- DAsj$deltapop0to14 / DAsj$POP2006
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltaperckids + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
-summary(myprobit)
-```
-
-In case we think that higher income DAs see higher delta income from 2006 to 2016:
-
-```{r}
-a <- lm(deltaincome ~ log(AVGAFTERTAXINCHH2006), data=DAsj)
-summary(a)
-```
-
-No, it's not true at all. Slight negative coefficient with a good p-value, but actually nearly 0 R-squared, so pretty much no explanatory value.
-
-##Gentrification?
-
-Can we look specifically at "gentrification"? If a gentrifying neighbourhood is defined as one where average HH income grew faster than average AND kids decreased, then:
-
-```{r}
-DAsj$gent <- as.numeric(DAsj$deltaincoveravg==1) * as.numeric(DAsj$deltapop0to14<=0)
-```
-
-Let's add that to our full probit:
-
-```{r}
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltaperckids + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + gent, family = binomial(link = "probit"), data = DAsj)
-
-## model summary
-summary(myprobit)
-```
-
-Hm.
-
-This looks to me like neighbourhoods that saw their old school close from 2006 to 2016 gentrified _more_ (p=0.17, I know that's not great but it is the vaguest of proof). 
-
----
-
-# Catholic school closures
-
-The same analysis can be done for Catholic school closures, with one caveat: Catholic grade school closures from 2006-2010 are known, but boundaries for 2006-2010 were not available. 
-
-The following assumptions had to be made for Catholic schools:
-
-1. St. Christopher (closed in June 2008) is known from news reports to have had a boundary with St. John the Baptist along the railway line by Lawrence Road;
-2. St. Helen's (closed June 2009) east boundary was assumed, with no evidence, to be the Red Hill Expressway;
-3. St. Mary Elementary (closed June 2009) was assumed, with no evidence, to share a boundary with St. Lawrence along the north end railway;
-4. Holy Family (closed 2009) was assumed to have a boundary along Ottawa Street. This is the most questionable assumption, since it means Holy Name of Jesus had a catchment twice the size, although its enrolment numbers were roughly equal.
-5. St. Jerome and Catherine of Siena are known from news reports to have had a boundary along the Linc.
-
-With that caveat in mind,
-
-We can first load the Catholic DA shapefile data, strip geometry (since all we want is the closure flag), then join it, then generate an isschoolclosed2 variable:
-
-```{r join-Cath-sf, echo = FALSE, message = FALSE, warning=FALSE}
-DAcath <- st_read("./ArcGIS/CATHOLIC", layer = "Join_Cath")
-DAcath <- mutate(DAcath, DAUID = as.integer(as.character(DAUID)))
-DAcath <- DAcath %>% 
-  rename(
-    Cath_CLOSED = Max_CLOSED
-    )
-st_geometry(DAcath) <- NULL
-DAcath <- DAcath %>% select(DAUID, Cath_CLOSED)
-DAsj2 <- inner_join(DAsj, DAcath)
-DAsj2$Isschoolclosed2 <- as.numeric(DAsj2$Cath_CLOSED==1 | DAsj2$Cath_CLOSED==2)
-```
-
-Let's look at a map of the Catholic school closures:
-
-
-```{r zoomable-mapC, echo = FALSE, message = FALSE, warning=FALSE}
-tmap_mode("view")
-#qtm(ridings, fill = "Isschoolclosed")
-pal1 <- c("green", "red")
-tm_shape(DAsj2) + tm_polygons("Isschoolclosed2", palette = pal1)
-```
-
-And now we can do another probit, this time for Catholic school closures, on the variables suggested by AP:
-
-```{r}
-myprobit2 <- glm(Isschoolclosed2 ~ deltaincome + deltapop0to14 + deltaperckids + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006 + gent, family = binomial(link = "probit"), data = DAsj2)
-
-## model summary
-summary(myprobit2)
-```
-
-Compare the Catholic result to the public board result. In the Catholic case, the p value for deltaincome is not significant, but after tax household income 2006 is still a negative predictor of school closure. Also, areas with a decrease in children as percent of population saw schools more likely to close.
-
-## EXTRA: density plots?
-
-```{r}
-DAsj2
-```
-
-I would like to write this file, so we can use it in AP's regression. Apparently to save this I need to crunch down column names to ten letters or less.
-
-```{r}
-DAsj2 <- DAsj2 %>% 
-  rename(
-    POP06 = POP2006,
-    POPKIDS06 = POP0TO142006,
-    PCLOWINCO6 = PERCLOWINC0TO52006,
-    AVGINC06 = AVGAFTERTAXINCHH2006,
-    POP16 = POP2016,
-    POPKIDS16 = POP0TO142016,
-    PCLOWINC16 = PERCLOWINC0TO52016,
-    AVGINC16 = AVGAFTERTAXINCHH2016,
-    DELTAINC = deltaincome,
-    DINCOVERAV = deltaincoveravg,
-    DELTAKIDS = deltapop0to14,
-    SCLCLOSED = Isschoolclosed,
-    DELTAPKIDS = deltaperckids,
-    CATHCLOSED = Isschoolclosed2
-    )
-st_write(DAsj2, "C:/Users/me/Documents/GitHub/DAsj2.shp", delete_layer=TRUE)
-```
-
-
-Let's see if I can do some density plots to show differences:
-
-```{r}
-# Change line color by sex
+# Change line color by school closed
 a <- ggplot(DAsj, aes(x = AVGAFTERTAXINCHH2006))
 a + geom_density(aes(color = as.factor(Isschoolclosed))) +
   geom_vline(aes(xintercept = mean(deltaincome)), 
-             linetype = "dashed", size = 0.6)
+             linetype = "dashed", size = 0.6) +
+  labs(title="Income characterists of closed and non-closed DAs",x="DA 2006 average after-tax household income", y = "Density")
 ```
 
 
-```{r}
-a <- ggplot(DAsj2, aes(x = AVGAFTERTAXINCHH2006))
-a + geom_density(aes(color = as.factor(Isschoolclosed2))) +
-  geom_vline(aes(xintercept = mean(deltaincome)), 
-             linetype = "dashed", size = 0.6)
+Methodology
+===========
+
+we will do a bit of exploratory analysis, then a probit 
+
+ 
+
+
+
+
+
+
+
+
+Probit
+======
+
+- do one
+- then charts with results
+
+- do another one for Catholic primary schools, chart the results
+
+
+
+
+Addendum?
+=========
+
+Can we also wwork with the data files to do another regression on school age in 2016 versus neighbourhood characteristics? It looks like poor children did get given newer schools.
+
+
+
+
+
+
+
+
+
+The Elsevier article class
+==========================
+
+#### Installation
+
+If the document class *elsarticle* is not available on your computer,
+you can download and install the system package *texlive-publishers*
+(Linux) or install the LaTeX package *elsarticle* using the package
+manager of your TeX installation, which is typically TeX Live or MikTeX.
+
+#### Usage
+
+Once the package is properly installed, you can use the document class
+*elsarticle* to create a manuscript. Please make sure that your
+manuscript follows the guidelines in the Guide for Authors of the
+relevant journal. It is not necessary to typeset your manuscript in
+exactly the same way as an article, unless you are submitting to a
+camera-ready copy (CRC) journal.
+
+#### Functionality
+
+The Elsevier article class is based on the standard article class and
+supports almost all of the functionality of that class. In addition, it
+features commands and options to format the
+
+-   document style
+
+-   baselineskip
+
+-   front matter
+
+-   keywords and MSC codes
+
+-   theorems, definitions and proofs
+
+-   lables of enumerations
+
+-   citation style and labeling.
+
+Front matter
+============
+
+The author names and affiliations could be formatted in two ways:
+
+(1) Group the authors per affiliation.
+
+(2) Use footnotes to indicate the affiliations.
+
+See the front matter of this document for examples. You are recommended
+to conform your choice to the journal you are submitting to.
+
+Bibliography styles
+===================
+
+There are various bibliography styles available. You can select the
+style of your choice in the preamble of this document. These styles are
+Elsevier styles based on standard styles like Harvard and Vancouver.
+Please use BibTeX to generate your bibliography and include DOIs
+whenever available.
+
+
+
+
+
+
+changing the flag values to suit the rubric in Figure \ref{fig:pubschoolclassrubric}:
+
+```{r table1-create, echo = FALSE}
+table1.df <- data.frame(Flag = c("0", "1", "2", "3", "4", "9"),
+                        Meaning = c("DA is completely outside closed catchment", 
+                                    "DA is completely inside closed catchment", 
+                                    "DA is about 70-90% inside closed catchment", 
+                                    "DA is about 30-70% inside closed catchment", 
+                                    "DA is only 10-30% inside closed catchment", 
+                                    "DA is outside closed catchment with coincident edge"))
+kable(table1.df) %>% kable_styling(latex_options = c("scale_down"))
 ```
 
 
@@ -658,9 +572,15 @@ a + geom_density(aes(color = as.factor(Isschoolclosed2))) +
 
 
 
-# Next to do
 
-1. As an aside, I want to do some area analysis of the census variables, because that checkerboard pattern for deltaincome concerns me.
 
-2. Also want to do some dot plots. Go to AP's R code for real estate and look at what he does there.
 
+
+
+
+
+
+Here are two sample references: @Feynman1963118 [@Dirac1953888].
+
+References {#references .unnumbered}
+==========

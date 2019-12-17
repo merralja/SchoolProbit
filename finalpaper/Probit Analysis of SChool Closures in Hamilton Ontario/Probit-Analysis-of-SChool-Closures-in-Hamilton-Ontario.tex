@@ -1,0 +1,314 @@
+\documentclass[]{elsarticle} %review=doublespace preprint=single 5p=2 column
+%%% Begin My package additions %%%%%%%%%%%%%%%%%%%
+\usepackage[hyphens]{url}
+
+  \journal{Journal for the Society for Putting Things on Top of Other Things} % Sets Journal name
+
+
+\usepackage{lineno} % add
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\usepackage{graphicx}
+\usepackage{booktabs} % book-quality tables
+%%%%%%%%%%%%%%%% end my additions to header
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \usepackage{fontspec}
+  \ifxetex
+    \usepackage{xltxtra,xunicode}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use microtype if available
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\bibliographystyle{elsarticle-harv}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={Probit Analysis of School Closures in Hamilton Ontario},
+            colorlinks=false,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+
+\setcounter{secnumdepth}{0}
+% Pandoc toggle for numbering sections (defaults to be off)
+\setcounter{secnumdepth}{0}
+% Pandoc header
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+
+
+\begin{document}
+\begin{frontmatter}
+
+  \title{Probit Analysis of School Closures in Hamilton Ontario}
+    \author[School of Geography and Earth Sciences, McMaster University]{John Merrall\corref{c1}}
+   \ead{merralja@mcmaster.ca} 
+   \cortext[c1]{Corresponding Author}
+      \address[School of Geography and Earth Sciences, McMaster University]{General Sciences Rm. 206, McMaster University, 1280 Main Street West,
+Hamilton, Ontario L8S 4K1}
+  
+  \begin{abstract}
+  This is the abstract.
+  
+  It consists of two paragraphs.
+  \end{abstract}
+  
+ \end{frontmatter}
+
+\emph{Text based on elsarticle sample manuscript, see
+\url{http://www.elsevier.com/author-schemas/latex-instructions\#elsarticle}}
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+School closures in the city of Hamilton became a contentious issue in
+2002, when the Harris government appointed Jim Murray as special
+supervisor to oversee a rationalization of the Hamilton-Wentworth
+District School Board (HWDSB) in the face of trustee opposition to
+closure of under-utilized schools (Honey 2002; Prokaska 2012). The
+following years saw a wave of public board school closures and
+replacements in Hamilton, aiming to reduce per-pupil education costs in
+the face of urban demographic change, and to access new provincial
+construction funding. Resistance to the consolidation process eventually
+relented, and this accommodation review system has since become
+institutionalized at the HWDSB; the Hamilton Catholic board (HWCDSB),
+facing similar overcapacity issues, has followed suit.
+
+Given the wave of school reorganizations that occurred over the past
+twenty years, it makes sense to look at whether these closures had a
+social equity effect: neighbourhoods certainly didn't suddenly find
+themselves without any school at all, but distance to schools would have
+increased in areas where school closures occurred. Did this increase in
+walking distance disproportionately affect the poor?
+
+This paper will examine the likelihood of a HWDSB or HWCDSB school being
+closed between the years of 2006 and 2016, dependent on the income and
+deprivation characteristics and trends of each census dissemination area
+over that same period of time.
+
+\hypertarget{data}{%
+\section{Data}\label{data}}
+
+\hypertarget{census-data}{%
+\subsection{Census Data}\label{census-data}}
+
+First, a compact set of Hamilton dissemination area level census data
+and GIS dissemination area shapefiles for census years 2006 and 2016
+were downloaded from CHASS; areas with NA or zero values for Average
+After-Tax Income, and NA values for Percent Children 0-5 Low Income,
+were dropped from the dataset. Since this paper's analysis is performed
+at the 2006 dissemination area level of support, 2016 data was appended
+to the 2006 data frame; the 23 dissemination areas of 2006 which were
+split by the time of the 2016 census were identified in R, verified
+manually in ArcGIS, and 2016 data was then manipulated to append to the
+data frames for those subsequently-split 2006 DAs. Then, the 2006 and
+2016 data was used to calculate each DA's percent change in average
+household after-tax income, and absolute change in population ages 0 to
+14.
+
+\hypertarget{flagging-das-for-school-closure}{%
+\subsection{Flagging DAs for school
+closure}\label{flagging-das-for-school-closure}}
+
+An incomplete set of shapefiles was received from the HWDSB for primary,
+middle school, and secondary school catchments from the years 2005 to
+2019; this set of files was checked for veracity against the archive of
+the HWDSB website available at archive.org, as well as against news
+reports of school closures throughout that period, to produce a complete
+and checked set of HWDSB school catchment GIS files. For this paper, the
+2005-6 primary-school catchment file was then modified to add a flag for
+all primary school catchments where the primary school was subsequently
+closed by 2016.
+
+A spatial join was then done in ArcGIS between the flagged 2006 HWDSB
+elementary school catchment file and the 2006 dissemination area
+shapefile, in order to add a flag to each 2006 DA to identify whether
+its public school had closed by 2016. The file created was then manually
+verified for the condition of each DA, changing the flag values to suit
+the rubric in Figure \ref{fig:pubschoolclassrubric}:
+
+\begin{table}
+
+\caption{\label{tab:table1-create}\label{tab:pubschoolclassrubric} Public School Catchment Classification Rubric}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{l|l}
+\hline
+Flag & Meaning\\
+\hline
+0 & DA is completely outside closed catchment\\
+\hline
+1 & DA is completely inside closed catchment\\
+\hline
+2 & DA is about 70-90\% inside closed catchment\\
+\hline
+3 & DA is about 30-70\% inside closed catchment\\
+\hline
+4 & DA is only 10-30\% inside closed catchment\\
+\hline
+9 & DA is outside closed catchment with coincident edge\\
+\hline
+\end{tabular}}
+\end{table}
+
+\hypertarget{exploratory-analysis}{%
+\section{Exploratory Analysis}\label{exploratory-analysis}}
+
+\begin{itemize}
+\tightlist
+\item
+  exploratory analysis (density plots)
+\end{itemize}
+
+\hypertarget{methodology}{%
+\section{Methodology}\label{methodology}}
+
+we will do a bit of exploratory analysis, then a probit
+
+\hypertarget{probit}{%
+\section{Probit}\label{probit}}
+
+\begin{itemize}
+\item
+  do one
+\item
+  then charts with results
+\item
+  do another one for Catholic primary schools, chart the results
+\end{itemize}
+
+\hypertarget{addendum}{%
+\section{Addendum?}\label{addendum}}
+
+Can we also wwork with the data files to do another regression on school
+age in 2016 versus neighbourhood characteristics? It looks like poor
+children did get given newer schools.
+
+\hypertarget{the-elsevier-article-class}{%
+\section{The Elsevier article class}\label{the-elsevier-article-class}}
+
+\hypertarget{installation}{%
+\paragraph{Installation}\label{installation}}
+
+If the document class \emph{elsarticle} is not available on your
+computer, you can download and install the system package
+\emph{texlive-publishers} (Linux) or install the LaTeX package
+\emph{elsarticle} using the package manager of your TeX installation,
+which is typically TeX Live or MikTeX.
+
+\hypertarget{usage}{%
+\paragraph{Usage}\label{usage}}
+
+Once the package is properly installed, you can use the document class
+\emph{elsarticle} to create a manuscript. Please make sure that your
+manuscript follows the guidelines in the Guide for Authors of the
+relevant journal. It is not necessary to typeset your manuscript in
+exactly the same way as an article, unless you are submitting to a
+camera-ready copy (CRC) journal.
+
+\hypertarget{functionality}{%
+\paragraph{Functionality}\label{functionality}}
+
+The Elsevier article class is based on the standard article class and
+supports almost all of the functionality of that class. In addition, it
+features commands and options to format the
+
+\begin{itemize}
+\item
+  document style
+\item
+  baselineskip
+\item
+  front matter
+\item
+  keywords and MSC codes
+\item
+  theorems, definitions and proofs
+\item
+  lables of enumerations
+\item
+  citation style and labeling.
+\end{itemize}
+
+\hypertarget{front-matter}{%
+\section{Front matter}\label{front-matter}}
+
+The author names and affiliations could be formatted in two ways:
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\item
+  Group the authors per affiliation.
+\item
+  Use footnotes to indicate the affiliations.
+\end{enumerate}
+
+See the front matter of this document for examples. You are recommended
+to conform your choice to the journal you are submitting to.
+
+\hypertarget{bibliography-styles}{%
+\section{Bibliography styles}\label{bibliography-styles}}
+
+There are various bibliography styles available. You can select the
+style of your choice in the preamble of this document. These styles are
+Elsevier styles based on standard styles like Harvard and Vancouver.
+Please use BibTeX~to generate your bibliography and include DOIs
+whenever available.
+
+Here are two sample references: Feynman and Vernon Jr. (1963; Dirac,
+1953).
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-Dirac1953888}{}%
+Dirac, P., 1953. The lorentz transformation and absolute time. Physica
+19, 888--896.
+doi:\href{https://doi.org/10.1016/S0031-8914(53)80099-6}{10.1016/S0031-8914(53)80099-6}
+
+\leavevmode\hypertarget{ref-Feynman1963118}{}%
+Feynman, R., Vernon Jr., F., 1963. The theory of a general quantum
+system interacting with a linear dissipative system. Annals of Physics
+24, 118--173.
+doi:\href{https://doi.org/10.1016/0003-4916(63)90068-X}{10.1016/0003-4916(63)90068-X}
+
+
+\end{document}
+
+
