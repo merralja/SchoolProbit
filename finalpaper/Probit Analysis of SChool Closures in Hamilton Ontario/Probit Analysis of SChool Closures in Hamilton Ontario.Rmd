@@ -408,7 +408,7 @@ A spatial join was then done in ArcGIS between the flagged 2006 HWDSB elementary
 
 ```{r load-geometry, include=FALSE}
 #
-# load the DA geometry file, join it to census file
+# load the public school DA geometry file, join it to census file
 #
 DAgeometry <- st_read("./ArcGIS", layer = "Join_Output")
 DAgeometry <- mutate(DAgeometry, DAUID = as.integer(as.character(DAUID)))
@@ -418,17 +418,48 @@ DAsj <- inner_join(DAs, finaldf)
 DAsj$Isschoolclosed <- as.numeric(DAsj$Max_CLOSED==1 | DAsj$Max_CLOSED==2)
 ```
 
+For Catholic school closures, the same work was performed in ArcGIS: a spatial join was performed between closed Catholic elementary catchments and DAs, and it was manually verified. In the case of Catholic schools, however, lack of hard data between 2006 and 2010 meant that some pre-2010 boundaries had to be assumed. The map showing which Hamilton DAs experienced a Catholic primary school closure from 2006 to 2016 is shown in Figure \ref{fig:Cath-map}.
 
-```{r print-DA-map, echo = FALSE, fig.cap="\\label{fig:DA-map} map of DAs with school closures"}}
+```{r print-DA-map, echo = FALSE, fig.cap="\\label{fig:DA-map} map of DAs with public primary school closures"}
 ham_bb <- st_bbox(DAsj %>% filter(DAUID %in% c("35250267", "35250942")))
 #new tmap with bbox
 tm_shape(DAsj, bbox = ham_bb) + 
 tm_borders() +
    tm_layout(legend.title.size = 1,
           legend.text.size = 0.6,
-          legend.position = c("top","right"),
+#          legend.position = c("top","right"),
           legend.bg.alpha = 1) +       
    tm_polygons(col = "Isschoolclosed", title="School Status",
+               style = "fixed",
+              breaks = c(0, 0.9, 2),
+              labels = c("Not Closed", "Closed")
+               )
+```
+
+
+```{r load-Catholic, include=FALSE}
+DAcath <- st_read("./ArcGIS/CATHOLIC", layer = "Join_Cath")
+DAcath <- mutate(DAcath, DAUID = as.integer(as.character(DAUID)))
+DAcath <- DAcath %>% 
+  rename(
+    Cath_CLOSED = Max_CLOSED
+    )
+st_geometry(DAcath) <- NULL
+DAcath <- DAcath %>% select(DAUID, Cath_CLOSED)
+DAsj2 <- inner_join(DAsj, DAcath)
+DAsj2$Isschoolclosed2 <- as.numeric(DAsj2$Cath_CLOSED==1 | DAsj2$Cath_CLOSED==2)
+```
+
+
+```{r print-Cath-map, echo = FALSE, fig.cap="\\label{fig:Cath-map} Map of DAs with Catholic primary school closures"}
+#new tmap with bbox
+tm_shape(DAsj2, bbox = ham_bb) + 
+tm_borders() +
+   tm_layout(legend.title.size = 1,
+          legend.text.size = 0.6,
+#          legend.position = c("top","right"),
+          legend.bg.alpha = 1) +       
+   tm_polygons(col = "Isschoolclosed2", title="School Status",
                style = "fixed",
               breaks = c(0, 0.9, 2),
               labels = c("Not Closed", "Closed")
@@ -439,15 +470,48 @@ tm_borders() +
 Exploratory Analysis
 ====================
 
-
-
 ```{r}
-# Change line color by school closed
+library(gridExtra)
+```
+
+An initial investigation can use density plots to determine whether there is a difference in catchments, between those with a school closure and those without, for various variables in the census data. In Figure \ref{fig:densityplots}, for example, it can be seen that for both the HWDSB and HWCDSB, schools from catchments with a lower average after-tax household income were more likely to be closed; this, however, could certainly be due to the difference in incomes across Hamilton, since areas seeing housing growth (and thus high utilization of schools) are less likely to see school closures, while older areas with no housing growth (and thus possible under-utilization of schools that were built for a larger child population) would be more likely to see schools close. Contrast this with the density plots for DA delta income in Figure \ref{fig:deltaincomeplots}, for example: neighbourhoods showing lower income growth from 2006 to 2016 seem to be slightly _less_ likely to see their school close.
+
+
+```{r fig-right-left-panel-plot, echo = FALSE, fig.cap="\\label{fig:densityplots} Income characterists of closed and non-closed DAs"}
+# Recreate Figure 1
 a <- ggplot(DAsj, aes(x = AVGAFTERTAXINCHH2006))
-a + geom_density(aes(color = as.factor(Isschoolclosed))) +
+a <- a + geom_density(aes(color = as.factor(Isschoolclosed))) +
   geom_vline(aes(xintercept = mean(deltaincome)), 
              linetype = "dashed", size = 0.6) +
-  labs(title="Income characterists of closed and non-closed DAs",x="DA 2006 average after-tax household income", y = "Density")
+  labs(title="Public schools",x="DA 2006 average income", y = "Density", col="School Closed")
+a <- a + theme(legend.position="bottom") 
+#
+b <- ggplot(DAsj2, aes(x = AVGAFTERTAXINCHH2006))
+b <- b + geom_density(aes(color = as.factor(Isschoolclosed2))) +
+  geom_vline(aes(xintercept = mean(deltaincome)), 
+             linetype = "dashed", size = 0.6) +
+  labs(title="Catholic schools",x="DA 2006 average income", y = "Density", col="School Closed")
+b <- b + theme(legend.position="bottom")
+grid.arrange(a, b, ncol = 2)
+```
+
+
+```{r fig-right-left-panel-plot2, echo = FALSE, fig.cap="\\label{fig:deltaincomeplots} Delta income characterists of closed and non-closed DAs"}
+# Recreate Figure 
+c <- ggplot(DAsj, aes(x = (deltaincome)))
+c <- c + geom_density(aes(color = as.factor(Isschoolclosed))) +  xlim(NA,2.5) +
+  geom_vline(aes(xintercept = mean(deltapop0to14)), 
+             linetype = "dashed", size = 0.6) +
+  labs(title="Public schools",x="DA delta income (%)", y = "Density", col="School closed")
+c <- c + theme(legend.position="bottom") 
+#
+d <- ggplot(DAsj2, aes(x = (deltaincome)))
+d <- d + geom_density(aes(color = as.factor(Isschoolclosed2))) + xlim(NA,2.5) +
+  geom_vline(aes(xintercept = mean(deltapop0to14)), 
+             linetype = "dashed", size = 0.6) +
+  labs(title="Catholic schools",x="DA delta income (%)", y = "Density", col="School closed")
+d <- d + theme(legend.position="bottom")
+grid.arrange(c, d, ncol = 2)
 ```
 
 
@@ -456,10 +520,26 @@ Methodology
 
 we will do a bit of exploratory analysis, then a probit 
 
+- do one
+- then charts with results
+
+- do another one for Catholic primary schools, chart the results
+
+
+
+
  
 
+```{r}
+myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+summary(myprobit)
+```
 
 
+```{r}
+myprobit2 <- glm(Isschoolclosed2 ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj2)
+summary(myprobit2)
+```
 
 
 
@@ -467,13 +547,6 @@ we will do a bit of exploratory analysis, then a probit
 
 Probit
 ======
-
-- do one
-- then charts with results
-
-- do another one for Catholic primary schools, chart the results
-
-
 
 
 Addendum?
