@@ -515,14 +515,15 @@ grid.arrange(c, d, ncol = 2)
 ```
 
 
-Methodology
-===========
+Probit Analysis
+===============
+
+
+
 
 we will do a bit of exploratory analysis, then a probit 
 
 - do one
-- then charts with results
-
 - do another one for Catholic primary schools, chart the results
 
 
@@ -531,22 +532,58 @@ we will do a bit of exploratory analysis, then a probit
  
 
 ```{r}
-myprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
-summary(myprobit)
+Pprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
+summary(Pprobit)
 ```
 
 
 ```{r}
-myprobit2 <- glm(Isschoolclosed2 ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj2)
-summary(myprobit2)
+Cprobit <- glm(Isschoolclosed2 ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj2)
+summary(Cprobit)
 ```
 
+```{r}
+z <- summary(Cprobit)
+```
+
+```{r}
+z$coefficients
+```
 
 
 
 
 Probit
 ======
+
+
+
+```{r probitresults, echo=FALSE}
+models.df <- data.frame(Estimate.1 = Pprobit$coefficients, 
+                        pval.1 = paste(ifelse(summary(Pprobit)$coefficients[,4] > 0.001, 
+                                              round(summary(Pprobit)$coefficients[,4], 3), 
+                                              "< 0.001")),
+                        Estimate.2 = Cprobit$coefficients, 
+                        pval.2 = paste(ifelse(summary(Cprobit)$coefficients[,4] > 0.001, 
+                                              round(summary(Cprobit)$coefficients[,4], 3), 
+                                              "< 0.001")))
+
+kable(models.df,
+      digits = 3,
+      booktabs = TRUE,
+      escape = FALSE,
+      col.names = c("\\beta", "p-val", "\\beta", "p-val"),
+      caption = "\\label{tab:probitresults} Regression results: Likelihood of school closure") %>%
+  add_header_above(c("Variable" = 1, 
+                     "Public" = 2, 
+                     "Catholic" = 2),
+                   escape = FALSE) %>%
+  footnote(c(paste("AIC (Public) = ", as.character(round(summary(Pprobit)$aic, 2))),
+             paste("AIC (Catholic) = ", as.character(round(summary(Cprobit)$aic, 2)))),
+           escape = FALSE)
+
+
+```
 
 
 Addendum?
