@@ -9,9 +9,8 @@ address:
   - code: School of Geography and Earth Sciences, McMaster University
     address: General Sciences Rm. 206, McMaster University, 1280 Main Street West, Hamilton, Ontario L8S 4K1
 abstract: |
-  This is the abstract.
-
-  It consists of two paragraphs.
+  Does the process of school closures and amalgamation negatively affect students from poorer socioecoomic backgrounds?
+  This study uses census data and historical school catchment maps to study the distributional effects of school closures in Hamilton, Ontario from 2006 to 2016.
 
 journal: "Journal for Doing Spatial Stuff"
 date: "`r Sys.Date()`"
@@ -22,7 +21,6 @@ csl: elsevier-harvard.csl
 output: rticles::elsevier_article
 ---
 
-_Text based on elsarticle sample manuscript, see [http://www.elsevier.com/author-schemas/latex-instructions#elsarticle](http://www.elsevier.com/author-schemas/latex-instructions#elsarticle)_
 
 
 ```{r load-packages, include = FALSE}
@@ -31,6 +29,7 @@ library(ggplot2)
 library(kableExtra)
 library(rticles)
 library(sf)
+library(gridExtra)
 library(tidyverse)
 library(tmap)
 ```
@@ -470,10 +469,6 @@ tm_borders() +
 Exploratory Analysis
 ====================
 
-```{r}
-library(gridExtra)
-```
-
 An initial investigation can use density plots to determine whether there is a difference in catchments, between those with a school closure and those without, for various variables in the census data. In Figure \ref{fig:densityplots}, for example, it can be seen that for both the HWDSB and HWCDSB, schools from catchments with a lower average after-tax household income were more likely to be closed; this, however, could certainly be due to the difference in incomes across Hamilton, since areas seeing housing growth (and thus high utilization of schools) are less likely to see school closures, while older areas with no housing growth (and thus possible under-utilization of schools that were built for a larger child population) would be more likely to see schools close. Contrast this with the density plots for DA delta income in Figure \ref{fig:deltaincomeplots}, for example: neighbourhoods showing lower income growth from 2006 to 2016 seem to be marginally _less_ likely to see their school close.
 
 
@@ -524,15 +519,13 @@ $$
 Pr(Y=1 | X) = \Phi(X^T\beta)
 $$
 
-can be used to determine whether or not any socioeconomic factors for a DA are correlated with the binary outcome of school closure. In this case, Y is a vector of binary (1/0) flags for school closure, $$X$$ is a vector of socioeconomic characteristics for each DA, and $$\beta$$ is the coefficient vector to be solved.
+can be used to determine whether or not any socioeconomic factors for a DA are correlated with the binary outcome of school closure. In this case, Y is a vector of binary (1/0) flags for school closure, $X$ is a vector of socioeconomic characteristics for each DA, and $\beta$ is the coefficient vector to be solved.
 
 Two separate probit regressions were performed using _glm_ in R, using a limited set of socioeconomic characteristics from the 2006 and 2016 census, to determine whether school closure was more likely to happen in DAs with certain socioeconomic characteristics. The variables used in the probit regressions for this paper are shown in Table \ref{tab:probitvars}; regression results for both Catholic and Public schools are compared in Table \ref{tab:probitresults}.
 
 ```{r table1-create, echo = FALSE}
-table0.df <- data.frame(Variable = c("Isschoolclosed", "Isschoolclosed2", "deltaincome", "deltapop0to14", "POP0TO142006", "log(AVGAFTERTAXINCHH2006)", "PERCLOWINC0TO52006"),
-                      Meaning = c("probability of public primary school closure", 
-                           "probability of Catholic primary school closure", 
-                           "percent change in DA average aftertax household income, 2006-2016", 
+table0.df <- data.frame(Variable = c("deltaincome", "deltapop0to14", "POP0TO142006", "log(AVGAFTERTAXINCHH2006)", "PERCLOWINC0TO52006"),
+                      Meaning = c("percent change in DA average aftertax household income, 2006-2016", 
                            "absolute change in child (0-14) population, 2006-2016", 
                            "child (0-14) population, 2006", 
                            "natural log of 2006 average after-tax household income", 
@@ -584,9 +577,9 @@ Discussion
 
 As can be seen in Table \ref{tab:probitresults}, there is a significant negative relationship between 2006 household after-tax income and likelihood of public or Catholic primary school closure in Hamilton. This may be simply due to most school closures taking place in the older lower city where lower income housing is prevalent; newer areas of the city, which have more expensive houses and thus would require a higher after-tax income for residents, have seen net new construction of schools, with only a few school closures taking place south of the Lincoln Alexander Parkway. 
 
-The difference in Catholic and public regressions, for the variable of delta income, is an interesting result; Figures \ref{fig:DA-map} and \ref{fig:Cath-map} show a difference in lower-city Catholic and public closures, with closed Catholic schools more likely to be located south of King Street, with closed public schools more likely to occur in the north end of the city. The significance of delta income for the public, and not Catholic, board may thus be an artifact of the gentrification that took place in the North End over the study period.
+The difference in Catholic and public regressions, for the variable of delta income, is an interesting result; Figures \ref{fig:DA-map} and \ref{fig:Cath-map} show a locational difference in lower-city Catholic and public closures, with closed Catholic schools more likely to be located south of King Street, with closed public schools more likely to occur in the north end of the city. The significance of delta income for the public, and not Catholic, board may thus be an artifact of the gentrification that took place in the North End over the study period.
 
-Since the public board combined lower-city schol closures with rebuilding of several lower-city schools, a road to further understanding would be to conduct a regression of school age on the socioeconomic variables used in this paper, to illustrate whether longer walking distances to schools caused by HWDSB closures may have been offset by an improvement in the capital stock of lower-city schools. Another interesting study would involve seeing whether school age correlates positively with per-student education costs, to determine if the economic efficiency of education is affected by building age; this would require finding per-student education costs for each school.
+Since the public board combined lower-city school closures with rebuilding of several lower-city schools, a road to further understanding would be to conduct a regression of school age on the socioeconomic variables used in this paper, to illustrate whether longer walking distances to schools caused by HWDSB closures may have been offset by an improvement in the capital stock of lower-city schools. Another interesting study would involve seeing whether school age correlates positively with per-student education costs, to determine if the economic efficiency of education is affected by building age; this would require finding per-student education costs for each school.
 
 
 References {#references .unnumbered}
