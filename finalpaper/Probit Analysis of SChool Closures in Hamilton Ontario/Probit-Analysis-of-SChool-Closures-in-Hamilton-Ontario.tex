@@ -2,7 +2,7 @@
 %%% Begin My package additions %%%%%%%%%%%%%%%%%%%
 \usepackage[hyphens]{url}
 
-  \journal{Journal for the Society for Putting Things on Top of Other Things} % Sets Journal name
+  \journal{Journal for Doing Spatial Stuff} % Sets Journal name
 
 
 \usepackage{lineno} % add
@@ -33,6 +33,16 @@
 % use microtype if available
 \IfFileExists{microtype.sty}{\usepackage{microtype}}{}
 \bibliographystyle{elsarticle-harv}
+\usepackage{graphicx}
+% We will generate all images so they have a width \maxwidth. This means
+% that they will get their normal width if they fit onto the page, but
+% are scaled down if they would overflow the margins.
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+\else\Gin@nat@width\fi}
+\makeatother
+\let\Oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
 \ifxetex
   \usepackage[setpagesize=false, % page size defined by xetex
               unicode=false, % unicode breaks when used with xetex
@@ -82,15 +92,13 @@
 Hamilton, Ontario L8S 4K1}
   
   \begin{abstract}
-  This is the abstract.
-  
-  It consists of two paragraphs.
+  Does the process of school closures and amalgamation negatively affect
+  students from poorer socioecoomic backgrounds? This study uses census
+  data and historical school catchment maps to study the distributional
+  effects of school closures in Hamilton, Ontario from 2006 to 2016.
   \end{abstract}
   
  \end{frontmatter}
-
-\emph{Text based on elsarticle sample manuscript, see
-\url{http://www.elsevier.com/author-schemas/latex-instructions\#elsarticle}}
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -99,7 +107,7 @@ School closures in the city of Hamilton became a contentious issue in
 2002, when the Harris government appointed Jim Murray as special
 supervisor to oversee a rationalization of the Hamilton-Wentworth
 District School Board (HWDSB) in the face of trustee opposition to
-closure of under-utilized schools (Honey 2002; Prokaska 2012). The
+closure of under-utilized schools (Honey (2002); Prokaska (2012)). The
 following years saw a wave of public board school closures and
 replacements in Hamilton, aiming to reduce per-pupil education costs in
 the face of urban demographic change, and to access new provincial
@@ -158,155 +166,183 @@ A spatial join was then done in ArcGIS between the flagged 2006 HWDSB
 elementary school catchment file and the 2006 dissemination area
 shapefile, in order to add a flag to each 2006 DA to identify whether
 its public school had closed by 2016. The file created was then manually
-verified for the condition of each DA, changing the flag values to suit
-the rubric in Figure \ref{fig:pubschoolclassrubric}:
+verified for the condition of each DA, and a flag was created for each
+DA to identify whether it was (mostly or completely) inside the
+catchment of a subsequently closed school. The resulting map, showing
+wwhich Hamilton DAs experienced a school closure between 2006 and 2016,
+is shown in Figure \ref{fig:DA-map}. (Note that the closure of Bell
+Stone school in south Glanbrook is not shown, in order to show more
+detail for the rest of the city.)
 
-\begin{table}
+For Catholic school closures, the same work was performed in ArcGIS: a
+spatial join was performed between closed Catholic elementary catchments
+and DAs, and it was manually verified. In the case of Catholic schools,
+however, lack of hard data between 2006 and 2010 meant that some
+pre-2010 boundaries had to be assumed. The map showing which Hamilton
+DAs experienced a Catholic primary school closure from 2006 to 2016 is
+shown in Figure \ref{fig:Cath-map}.
 
-\caption{\label{tab:table1-create}\label{tab:pubschoolclassrubric} Public School Catchment Classification Rubric}
+\begin{figure}
 \centering
-\resizebox{\linewidth}{!}{
-\begin{tabular}[t]{l|l}
-\hline
-Flag & Meaning\\
-\hline
-0 & DA is completely outside closed catchment\\
-\hline
-1 & DA is completely inside closed catchment\\
-\hline
-2 & DA is about 70-90\% inside closed catchment\\
-\hline
-3 & DA is about 30-70\% inside closed catchment\\
-\hline
-4 & DA is only 10-30\% inside closed catchment\\
-\hline
-9 & DA is outside closed catchment with coincident edge\\
-\hline
-\end{tabular}}
-\end{table}
+\includegraphics{Probit-Analysis-of-SChool-Closures-in-Hamilton-Ontario_files/figure-latex/print-DA-map-1.pdf}
+\caption{\label{fig:DA-map} map of DAs with public primary school
+closures}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{Probit-Analysis-of-SChool-Closures-in-Hamilton-Ontario_files/figure-latex/print-Cath-map-1.pdf}
+\caption{\label{fig:Cath-map} Map of DAs with Catholic primary school
+closures}
+\end{figure}
 
 \hypertarget{exploratory-analysis}{%
 \section{Exploratory Analysis}\label{exploratory-analysis}}
 
-\begin{itemize}
-\tightlist
-\item
-  exploratory analysis (density plots)
-\end{itemize}
+An initial investigation can use density plots to determine whether
+there is a difference in catchments, between those with a school closure
+and those without, for various variables in the census data. In Figure
+\ref{fig:densityplots}, for example, it can be seen that for both the
+HWDSB and HWCDSB, schools from catchments with a lower average after-tax
+household income were more likely to be closed; this, however, could
+certainly be due to the difference in incomes across Hamilton, since
+areas seeing housing growth (and thus high utilization of schools) are
+less likely to see school closures, while older areas with no housing
+growth (and thus possible under-utilization of schools that were built
+for a larger child population) would be more likely to see schools
+close. Contrast this with the density plots for DA delta income in
+Figure \ref{fig:deltaincomeplots}, for example: neighbourhoods showing
+lower income growth from 2006 to 2016 seem to be marginally \emph{less}
+likely to see their school close.
 
-\hypertarget{methodology}{%
-\section{Methodology}\label{methodology}}
+\begin{figure}
+\centering
+\includegraphics{Probit-Analysis-of-SChool-Closures-in-Hamilton-Ontario_files/figure-latex/fig-right-left-panel-plot-1.pdf}
+\caption{\label{fig:densityplots} Income characterists of closed and
+non-closed DAs}
+\end{figure}
 
-we will do a bit of exploratory analysis, then a probit
+\begin{figure}
+\centering
+\includegraphics{Probit-Analysis-of-SChool-Closures-in-Hamilton-Ontario_files/figure-latex/fig-right-left-panel-plot2-1.pdf}
+\caption{\label{fig:deltaincomeplots} Delta income characterists of
+closed and non-closed DAs}
+\end{figure}
 
-\hypertarget{probit}{%
-\section{Probit}\label{probit}}
+\hypertarget{probit-analysis}{%
+\section{Probit Analysis}\label{probit-analysis}}
 
-\begin{itemize}
-\item
-  do one
-\item
-  then charts with results
-\item
-  do another one for Catholic primary schools, chart the results
-\end{itemize}
+A probit of the form
 
-\hypertarget{addendum}{%
-\section{Addendum?}\label{addendum}}
+\[
+Pr(Y=1 | X) = \Phi(X^T\beta)
+\]
 
-Can we also wwork with the data files to do another regression on school
-age in 2016 versus neighbourhood characteristics? It looks like poor
-children did get given newer schools.
+can be used to determine whether or not any socioeconomic factors for a
+DA are correlated with the binary outcome of school closure. In this
+case, Y is a vector of binary (1/0) flags for school closure, \(X\) is a
+vector of socioeconomic characteristics for each DA, and \(\beta\) is
+the coefficient vector to be solved.
 
-\hypertarget{the-elsevier-article-class}{%
-\section{The Elsevier article class}\label{the-elsevier-article-class}}
+Two separate probit regressions were performed using \emph{glm} in R,
+using a limited set of socioeconomic characteristics from the 2006 and
+2016 census, to determine whether school closure was more likely to
+happen in DAs with certain socioeconomic characteristics. The variables
+used in the probit regressions for this paper are shown in Table
+\ref{tab:probitvars}; regression results for both Catholic and Public
+schools are compared in Table \ref{tab:probitresults}.
 
-\hypertarget{installation}{%
-\paragraph{Installation}\label{installation}}
+\begin{table}
 
-If the document class \emph{elsarticle} is not available on your
-computer, you can download and install the system package
-\emph{texlive-publishers} (Linux) or install the LaTeX package
-\emph{elsarticle} using the package manager of your TeX installation,
-which is typically TeX Live or MikTeX.
+\caption{\label{tab:table1-create}\label{tab:probitvars} Regression variables used}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{l|l}
+\hline
+Variable & Meaning\\
+\hline
+deltaincome & percent change in DA average aftertax household income, 2006-2016\\
+\hline
+deltapop0to14 & absolute change in child (0-14) population, 2006-2016\\
+\hline
+POP0TO142006 & child (0-14) population, 2006\\
+\hline
+log(AVGAFTERTAXINCHH2006) & natural log of 2006 average after-tax household income\\
+\hline
+PERCLOWINC0TO52006 & percent of children 0-5 under family low-income threshold, 2006\\
+\hline
+\end{tabular}}
+\end{table}
 
-\hypertarget{usage}{%
-\paragraph{Usage}\label{usage}}
+\begin{table}
 
-Once the package is properly installed, you can use the document class
-\emph{elsarticle} to create a manuscript. Please make sure that your
-manuscript follows the guidelines in the Guide for Authors of the
-relevant journal. It is not necessary to typeset your manuscript in
-exactly the same way as an article, unless you are submitting to a
-camera-ready copy (CRC) journal.
+\caption{\label{tab:probitresults}\label{tab:probitresults} Regression results: Likelihood of school closure}
+\centering
+\begin{tabular}[t]{lrlrl}
+\toprule
+\multicolumn{1}{c}{Variable} & \multicolumn{2}{c}{Public} & \multicolumn{2}{c}{Catholic} \\
+\cmidrule(l{3pt}r{3pt}){1-1} \cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5}
+  & $\beta$ & p-val & $\beta$ & p-val\\
+\midrule
+(Intercept) & 9.260 & < 0.001 & 9.136 & < 0.001\\
+deltaincome & -0.966 & 0.017 & -0.193 & 0.541\\
+deltapop0to14 & -0.003 & 0.269 & -0.001 & 0.414\\
+POP0TO142006 & -0.002 & 0.164 & -0.001 & 0.275\\
+log(AVGAFTERTAXINCHH2006) & -0.857 & < 0.001 & -0.923 & < 0.001\\
+\addlinespace
+PERCLOWINC0TO52006 & -0.001 & 0.755 & 0.003 & 0.258\\
+\bottomrule
+\multicolumn{5}{l}{\textit{Note: }}\\
+\multicolumn{5}{l}{AIC (Public) =  417.67}\\
+\multicolumn{5}{l}{AIC (Catholic) =  542.74}\\
+\end{tabular}
+\end{table}
 
-\hypertarget{functionality}{%
-\paragraph{Functionality}\label{functionality}}
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
 
-The Elsevier article class is based on the standard article class and
-supports almost all of the functionality of that class. In addition, it
-features commands and options to format the
+As can be seen in Table \ref{tab:probitresults}, there is a significant
+negative relationship between 2006 household after-tax income and
+likelihood of public or Catholic primary school closure in Hamilton.
+This may be simply due to most school closures taking place in the older
+lower city where lower income housing is prevalent; newer areas of the
+city, which have more expensive houses and thus would require a higher
+after-tax income for residents, have seen net new construction of
+schools, with only a few school closures taking place south of the
+Lincoln Alexander Parkway.
 
-\begin{itemize}
-\item
-  document style
-\item
-  baselineskip
-\item
-  front matter
-\item
-  keywords and MSC codes
-\item
-  theorems, definitions and proofs
-\item
-  lables of enumerations
-\item
-  citation style and labeling.
-\end{itemize}
+The difference in Catholic and public regressions, for the variable of
+delta income, is an interesting result; Figures \ref{fig:DA-map} and
+\ref{fig:Cath-map} show a locational difference in lower-city Catholic
+and public closures, with closed Catholic schools more likely to be
+located south of King Street, with closed public schools more likely to
+occur in the north end of the city. The significance of delta income for
+the public, and not Catholic, board may thus be an artifact of the
+gentrification that took place in the North End over the study period.
 
-\hypertarget{front-matter}{%
-\section{Front matter}\label{front-matter}}
-
-The author names and affiliations could be formatted in two ways:
-
-\begin{enumerate}
-\def\labelenumi{(\arabic{enumi})}
-\item
-  Group the authors per affiliation.
-\item
-  Use footnotes to indicate the affiliations.
-\end{enumerate}
-
-See the front matter of this document for examples. You are recommended
-to conform your choice to the journal you are submitting to.
-
-\hypertarget{bibliography-styles}{%
-\section{Bibliography styles}\label{bibliography-styles}}
-
-There are various bibliography styles available. You can select the
-style of your choice in the preamble of this document. These styles are
-Elsevier styles based on standard styles like Harvard and Vancouver.
-Please use BibTeX~to generate your bibliography and include DOIs
-whenever available.
-
-Here are two sample references: Feynman and Vernon Jr. (1963; Dirac,
-1953).
+Since the public board combined lower-city school closures with
+rebuilding of several lower-city schools, a road to further
+understanding would be to conduct a regression of school age on the
+socioeconomic variables used in this paper, to illustrate whether longer
+walking distances to schools caused by HWDSB closures may have been
+offset by an improvement in the capital stock of lower-city schools.
+Another interesting study would involve seeing whether school age
+correlates positively with per-student education costs, to determine if
+the economic efficiency of education is affected by building age; this
+would require finding per-student education costs for each school.
 
 \hypertarget{references}{%
 \section*{References}\label{references}}
 \addcontentsline{toc}{section}{References}
 
 \hypertarget{refs}{}
-\leavevmode\hypertarget{ref-Dirac1953888}{}%
-Dirac, P., 1953. The lorentz transformation and absolute time. Physica
-19, 888--896.
-doi:\href{https://doi.org/10.1016/S0031-8914(53)80099-6}{10.1016/S0031-8914(53)80099-6}
+\leavevmode\hypertarget{ref-Honey}{}%
+Honey, K., 2002. Supervisor sees surplus for hamilton schools. The
+Hamilton Spectator 30 Oct 2002.
 
-\leavevmode\hypertarget{ref-Feynman1963118}{}%
-Feynman, R., Vernon Jr., F., 1963. The theory of a general quantum
-system interacting with a linear dissipative system. Annals of Physics
-24, 118--173.
-doi:\href{https://doi.org/10.1016/0003-4916(63)90068-X}{10.1016/0003-4916(63)90068-X}
+\leavevmode\hypertarget{ref-Prokaska}{}%
+Prokaska, L., 2012. Spectator's view: School closures painful but
+necessary. The Hamilton Spectator 9 May 2012.
 
 
 \end{document}
