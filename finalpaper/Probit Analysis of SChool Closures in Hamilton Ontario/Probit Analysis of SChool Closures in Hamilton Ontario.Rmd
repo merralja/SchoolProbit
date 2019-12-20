@@ -13,7 +13,7 @@ abstract: |
 
   It consists of two paragraphs.
 
-journal: "Journal for the Society for Putting Things on Top of Other Things"
+journal: "Journal for Doing Spatial Stuff"
 date: "`r Sys.Date()`"
 bibliography: mybibfile.bib
 #linenumbers: true
@@ -39,7 +39,7 @@ library(tmap)
 Introduction
 ============
 
-School closures in the city of Hamilton became a contentious issue in 2002, when the Harris government appointed Jim Murray as special supervisor to oversee a rationalization of the Hamilton-Wentworth District School Board (HWDSB) in the face of trustee opposition to closure of under-utilized schools (Honey 2002; Prokaska 2012). The following years saw a wave of public board school closures and replacements in Hamilton, aiming to reduce per-pupil education costs in the face of urban demographic change, and to access new provincial construction funding. Resistance to the consolidation process eventually relented, and this accommodation review system has since become institutionalized at the HWDSB; the Hamilton Catholic board (HWCDSB), facing similar overcapacity issues, has followed suit.
+School closures in the city of Hamilton became a contentious issue in 2002, when the Harris government appointed Jim Murray as special supervisor to oversee a rationalization of the Hamilton-Wentworth District School Board (HWDSB) in the face of trustee opposition to closure of under-utilized schools (@Honey; @Prokaska). The following years saw a wave of public board school closures and replacements in Hamilton, aiming to reduce per-pupil education costs in the face of urban demographic change, and to access new provincial construction funding. Resistance to the consolidation process eventually relented, and this accommodation review system has since become institutionalized at the HWDSB; the Hamilton Catholic board (HWCDSB), facing similar overcapacity issues, has followed suit.
 
 Given the wave of school reorganizations that occurred over the past twenty years, it makes sense to look at whether these closures had a social equity effect: neighbourhoods certainly didn't suddenly find themselves without any school at all, but distance to schools would have increased in areas where school closures occurred. Did this increase in walking distance disproportionately affect the poor?
 
@@ -420,7 +420,7 @@ DAsj$Isschoolclosed <- as.numeric(DAsj$Max_CLOSED==1 | DAsj$Max_CLOSED==2)
 
 For Catholic school closures, the same work was performed in ArcGIS: a spatial join was performed between closed Catholic elementary catchments and DAs, and it was manually verified. In the case of Catholic schools, however, lack of hard data between 2006 and 2010 meant that some pre-2010 boundaries had to be assumed. The map showing which Hamilton DAs experienced a Catholic primary school closure from 2006 to 2016 is shown in Figure \ref{fig:Cath-map}.
 
-```{r print-DA-map, echo = FALSE, fig.cap="\\label{fig:DA-map} map of DAs with public primary school closures"}
+```{r print-DA-map, echo = FALSE, warning = FALSE, fig.cap="\\label{fig:DA-map} map of DAs with public primary school closures"}
 ham_bb <- st_bbox(DAsj %>% filter(DAUID %in% c("35250267", "35250942")))
 #new tmap with bbox
 tm_shape(DAsj, bbox = ham_bb) + 
@@ -451,7 +451,7 @@ DAsj2$Isschoolclosed2 <- as.numeric(DAsj2$Cath_CLOSED==1 | DAsj2$Cath_CLOSED==2)
 ```
 
 
-```{r print-Cath-map, echo = FALSE, fig.cap="\\label{fig:Cath-map} Map of DAs with Catholic primary school closures"}
+```{r print-Cath-map, echo = FALSE, warning = FALSE, fig.cap="\\label{fig:Cath-map} Map of DAs with Catholic primary school closures"}
 #new tmap with bbox
 tm_shape(DAsj2, bbox = ham_bb) + 
 tm_borders() +
@@ -474,10 +474,10 @@ Exploratory Analysis
 library(gridExtra)
 ```
 
-An initial investigation can use density plots to determine whether there is a difference in catchments, between those with a school closure and those without, for various variables in the census data. In Figure \ref{fig:densityplots}, for example, it can be seen that for both the HWDSB and HWCDSB, schools from catchments with a lower average after-tax household income were more likely to be closed; this, however, could certainly be due to the difference in incomes across Hamilton, since areas seeing housing growth (and thus high utilization of schools) are less likely to see school closures, while older areas with no housing growth (and thus possible under-utilization of schools that were built for a larger child population) would be more likely to see schools close. Contrast this with the density plots for DA delta income in Figure \ref{fig:deltaincomeplots}, for example: neighbourhoods showing lower income growth from 2006 to 2016 seem to be slightly _less_ likely to see their school close.
+An initial investigation can use density plots to determine whether there is a difference in catchments, between those with a school closure and those without, for various variables in the census data. In Figure \ref{fig:densityplots}, for example, it can be seen that for both the HWDSB and HWCDSB, schools from catchments with a lower average after-tax household income were more likely to be closed; this, however, could certainly be due to the difference in incomes across Hamilton, since areas seeing housing growth (and thus high utilization of schools) are less likely to see school closures, while older areas with no housing growth (and thus possible under-utilization of schools that were built for a larger child population) would be more likely to see schools close. Contrast this with the density plots for DA delta income in Figure \ref{fig:deltaincomeplots}, for example: neighbourhoods showing lower income growth from 2006 to 2016 seem to be marginally _less_ likely to see their school close.
 
 
-```{r fig-right-left-panel-plot, echo = FALSE, fig.cap="\\label{fig:densityplots} Income characterists of closed and non-closed DAs"}
+```{r fig-right-left-panel-plot, echo = FALSE, warning = FALSE, fig.cap="\\label{fig:densityplots} Income characterists of closed and non-closed DAs"}
 # Recreate Figure 1
 a <- ggplot(DAsj, aes(x = AVGAFTERTAXINCHH2006))
 a <- a + geom_density(aes(color = as.factor(Isschoolclosed))) +
@@ -496,7 +496,7 @@ grid.arrange(a, b, ncol = 2)
 ```
 
 
-```{r fig-right-left-panel-plot2, echo = FALSE, fig.cap="\\label{fig:deltaincomeplots} Delta income characterists of closed and non-closed DAs"}
+```{r fig-right-left-panel-plot2, echo = FALSE, warning = FALSE, fig.cap="\\label{fig:deltaincomeplots} Delta income characterists of closed and non-closed DAs"}
 # Recreate Figure 
 c <- ggplot(DAsj, aes(x = (deltaincome)))
 c <- c + geom_density(aes(color = as.factor(Isschoolclosed))) +  xlim(NA,2.5) +
@@ -518,44 +518,38 @@ grid.arrange(c, d, ncol = 2)
 Probit Analysis
 ===============
 
+A probit of the form
+
+$$
+Pr(Y=1 | X) = \Phi(X^T\beta)
+$$
+
+can be used to determine whether or not any socioeconomic factors for a DA are correlated with the binary outcome of school closure. In this case, Y is a vector of binary (1/0) flags for school closure, $$X$$ is a vector of socioeconomic characteristics for each DA, and $$\beta$$ is the coefficient vector to be solved.
+
+Two separate probit regressions were performed using _glm_ in R, using a limited set of socioeconomic characteristics from the 2006 and 2016 census, to determine whether school closure was more likely to happen in DAs with certain socioeconomic characteristics. The variables used in the probit regressions for this paper are shown in Table \ref{tab:probitvars}; regression results for both Catholic and Public schools are compared in Table \ref{tab:probitresults}.
+
+```{r table1-create, echo = FALSE}
+table0.df <- data.frame(Variable = c("Isschoolclosed", "Isschoolclosed2", "deltaincome", "deltapop0to14", "POP0TO142006", "log(AVGAFTERTAXINCHH2006)", "PERCLOWINC0TO52006"),
+                      Meaning = c("probability of public primary school closure", 
+                           "probability of Catholic primary school closure", 
+                           "percent change in DA average aftertax household income, 2006-2016", 
+                           "absolute change in child (0-14) population, 2006-2016", 
+                           "child (0-14) population, 2006", 
+                           "natural log of 2006 average after-tax household income", 
+                           "percent of children 0-5 under family low-income threshold, 2006"))
+kable(table0.df, caption = "\\label{tab:probitvars} Regression variables used") %>% kable_styling(latex_options = c("scale_down"))
+```
 
 
-
-we will do a bit of exploratory analysis, then a probit 
-
-- do one
-- do another one for Catholic primary schools, chart the results
-
-
-
-
- 
-
-```{r}
+```{r pprobit, include = FALSE}
 Pprobit <- glm(Isschoolclosed ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj)
 summary(Pprobit)
 ```
 
-
-```{r}
+```{r cprobit, include = FALSE}
 Cprobit <- glm(Isschoolclosed2 ~ deltaincome + deltapop0to14 + POP0TO142006 + log(AVGAFTERTAXINCHH2006) + PERCLOWINC0TO52006, family = binomial(link = "probit"), data = DAsj2)
 summary(Cprobit)
 ```
-
-```{r}
-z <- summary(Cprobit)
-```
-
-```{r}
-z$coefficients
-```
-
-
-
-
-Probit
-======
-
 
 
 ```{r probitresults, echo=FALSE}
@@ -572,7 +566,7 @@ kable(models.df,
       digits = 3,
       booktabs = TRUE,
       escape = FALSE,
-      col.names = c("\\beta", "p-val", "\\beta", "p-val"),
+      col.names = c("$\\beta$", "p-val", "$\\beta$", "p-val"),
       caption = "\\label{tab:probitresults} Regression results: Likelihood of school closure") %>%
   add_header_above(c("Variable" = 1, 
                      "Public" = 2, 
@@ -585,112 +579,15 @@ kable(models.df,
 
 ```
 
+Discussion
+==========
 
-Addendum?
-=========
+As can be seen in Table \ref{tab:probitresults}, there is a significant negative relationship between 2006 household after-tax income and likelihood of public or Catholic primary school closure in Hamilton. This may be simply due to most school closures taking place in the older lower city where lower income housing is prevalent; newer areas of the city, which have more expensive houses and thus would require a higher after-tax income for residents, have seen net new construction of schools, with only a few school closures taking place south of the Lincoln Alexander Parkway. 
 
-Can we also wwork with the data files to do another regression on school age in 2016 versus neighbourhood characteristics? It looks like poor children did get given newer schools.
+The difference in Catholic and public regressions, for the variable of delta income, is an interesting result; Figures \ref{fig:DA-map} and \ref{fig:Cath-map} show a difference in lower-city Catholic and public closures, with closed Catholic schools more likely to be located south of King Street, with closed public schools more likely to occur in the north end of the city. The significance of delta income for the public, and not Catholic, board may thus be an artifact of the gentrification that took place in the North End over the study period.
 
+Since the public board combined lower-city schol closures with rebuilding of several lower-city schools, a road to further understanding would be to conduct a regression of school age on the socioeconomic variables used in this paper, to illustrate whether longer walking distances to schools caused by HWDSB closures may have been offset by an improvement in the capital stock of lower-city schools. Another interesting study would involve seeing whether school age correlates positively with per-student education costs, to determine if the economic efficiency of education is affected by building age; this would require finding per-student education costs for each school.
 
-
-
-
-
-
-
-
-The Elsevier article class
-==========================
-
-#### Installation
-
-If the document class *elsarticle* is not available on your computer,
-you can download and install the system package *texlive-publishers*
-(Linux) or install the LaTeX package *elsarticle* using the package
-manager of your TeX installation, which is typically TeX Live or MikTeX.
-
-#### Usage
-
-Once the package is properly installed, you can use the document class
-*elsarticle* to create a manuscript. Please make sure that your
-manuscript follows the guidelines in the Guide for Authors of the
-relevant journal. It is not necessary to typeset your manuscript in
-exactly the same way as an article, unless you are submitting to a
-camera-ready copy (CRC) journal.
-
-#### Functionality
-
-The Elsevier article class is based on the standard article class and
-supports almost all of the functionality of that class. In addition, it
-features commands and options to format the
-
--   document style
-
--   baselineskip
-
--   front matter
-
--   keywords and MSC codes
-
--   theorems, definitions and proofs
-
--   lables of enumerations
-
--   citation style and labeling.
-
-Front matter
-============
-
-The author names and affiliations could be formatted in two ways:
-
-(1) Group the authors per affiliation.
-
-(2) Use footnotes to indicate the affiliations.
-
-See the front matter of this document for examples. You are recommended
-to conform your choice to the journal you are submitting to.
-
-Bibliography styles
-===================
-
-There are various bibliography styles available. You can select the
-style of your choice in the preamble of this document. These styles are
-Elsevier styles based on standard styles like Harvard and Vancouver.
-Please use BibTeX to generate your bibliography and include DOIs
-whenever available.
-
-
-
-
-
-
-changing the flag values to suit the rubric in Figure \ref{fig:pubschoolclassrubric}:
-
-```{r table1-create, echo = FALSE}
-table1.df <- data.frame(Flag = c("0", "1", "2", "3", "4", "9"),
-                        Meaning = c("DA is completely outside closed catchment", 
-                                    "DA is completely inside closed catchment", 
-                                    "DA is about 70-90% inside closed catchment", 
-                                    "DA is about 30-70% inside closed catchment", 
-                                    "DA is only 10-30% inside closed catchment", 
-                                    "DA is outside closed catchment with coincident edge"))
-kable(table1.df) %>% kable_styling(latex_options = c("scale_down"))
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Here are two sample references: @Feynman1963118 [@Dirac1953888].
 
 References {#references .unnumbered}
 ==========
